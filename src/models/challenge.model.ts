@@ -10,18 +10,19 @@ export class Challenge {
   public id: string;
   public name: string;
   public winLossRecord: string;
-  public online: boolean;
+  public challenged: boolean;
 
   constructor(
-    { name, winLossRecord, online } = {
+    { id, name, winLossRecord, challenged } = {
+      id: null,
       name: null,
       winLossRecord: null,
-      online: false
+      challenged: false
     }
   ) {
-    this.id = uuidv4();
+    this.id = id;
     this.name = name;
     this.winLossRecord = winLossRecord;
-    this.online = online;
+    this.challenged = challenged;
   }
 }

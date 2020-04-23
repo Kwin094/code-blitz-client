@@ -2,14 +2,16 @@ import * as mongoose from 'mongoose';
 import { UserInfoSchema } from '../models/UserInfoModel';
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
+import { Singleton } from '../utils/singleton';
 
 const SALT_WORK_FACTOR = 10;
 mongoose.pluralize(null);
 
 const UserInfo = mongoose.model('UserInfo', UserInfoSchema);
+const singleton = Singleton.getInstance();
 
-export class UserInfoController{
-
+export class UserInfoController
+{
     public addNewUser (req: Request, res: Response) {                
         bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
             if (err) res.send(err);
@@ -20,39 +22,94 @@ export class UserInfoController{
 
                 let newUser = new UserInfo(req.body);
     
-                newUser.save((err, contact) => {
+                newUser.save((err, user) => {
                 if(err){
                     res.send(err);
                 }    
-                res.json(contact);
+                res.json(user);
                 });
             });
         });
     }
 
     public getUserInfo (req: Request, res: Response) {           
-        UserInfo.find({}, (err, contact) => {
+        UserInfo.find({}, (err, user) => {
             if(err){
                 res.send(err);
             }
-            res.json(contact); 
+            res.json(user); 
         });
     }
 
     public authUser (req: Request, res: Response)
-    {     
+    {
         UserInfo.findOne({'email':req.params["email"]},
-        (err, contact) => {
-            if(err || contact == null)
+        (err, user) => {
+            if(err || user == null)
             {
                 return res.send(err);
             }
 
-            bcrypt.compare(req.params["password"], contact["password"], (err, isMatch) => {
+            bcrypt.compare(req.params["password"], user["password"], (err, isMatch) => {
                 if (err || !isMatch) return res.send(err);
-                res.json({_id: contact['_id']});
+                res.json({_id: user['_id']});
             });
         });
+    }
+
+    public getUserData (req: Request, res: Response) 
+    {
+        let challenger = singleton.challengers[req.params['_id']];
+        if(challenger === undefined)
+        {
+            challenger = {time: Date.now(), challenged: []};
+            singleton.challengers[req.params['_id']] = challenger;
+        }
+        else
+            challenger.time = Date.now();
+
+        let inactiveKeys = []
+        Object.keys(singleton.challengers).forEach((key) => {
+            if (Date.now() - singleton.challengers[key].time > 20000) inactiveKeys.push(key);
+        });
+        inactiveKeys.forEach(key => {
+            delete singleton.challengers[key]
+            Object.keys(singleton.challengers).forEach((key) => {
+                singleton.challengers[key].challenged
+                    .splice(singleton.challengers[key].challenged.indexOf(key), 1)
+            })
+        });
+
+		// For records in Mongo matching our list of online challenges,
+		// get all the user info from the Mongo records
+        UserInfo.find().where('_id').in(Object.keys(singleton.challengers)).exec((err, users) => {
+            if(err)
+            {
+                return res.send(err);
+            }
+            
+            let challengerData = [];
+            
+            // And add the user info for all users EXCEPT ourselves
+            // to the challengerData array...
+            users.forEach(user => { 
+                if(user['_id'] != req.params['_id']) // TODO: remove in order to see 'self'
+                challengerData.push({_id: user['_id'], name: user['name'],
+                        wins: user['wins'], losses: user['losses'],
+                        challenged: singleton.challengers[user['_id']].challenged.includes(req.params['_id'])
+                });
+            });
+            res.json(challengerData);
+        });
+    }
+
+    public updateChallenges (req: Request, res: Response) 
+    {
+        Object.keys(singleton.challengers).forEach((key) => console.log(singleton.challengers[key].challenged))
+        if(!singleton.challengers[req.params['_id']].challenged.includes(req.body['_id']))
+            singleton.challengers[req.params['_id']].challenged.push(req.body['_id']);
+        
+        res.send('Challenge sent');
     }
 /*
     public getContactWithID (req: Request, res: Response) {           

@@ -33,7 +33,8 @@ switch (page) {
         break;
     case 'challenge':
         app = new ChallengeController(
-            session_id, 
+            session_id,
+            new UserService(), 
             new ChallengeService(), 
             new ChallengeView() );
         break;

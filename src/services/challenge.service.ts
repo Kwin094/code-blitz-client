@@ -10,8 +10,8 @@ export class ChallengeService {
   private onUserListChanged: Function;
 
   constructor() {
-    const users: Challenge[] = JSON.parse(localStorage.getItem('users')) || [];
-    this.users = users.map(user => new Challenge(user));
+    const users: Challenge[] = [];
+    this.users = users.map(user => new Challenge(user)); // REVIEW: noop
   }
 
   bindUserListChanged(callback: Function) {
@@ -20,13 +20,34 @@ export class ChallengeService {
 
   _commit(users: Challenge[]) {
     this.onUserListChanged(users);
-    localStorage.setItem('users', JSON.stringify(users));
+    //localStorage.setItem('users', JSON.stringify(users));
   }
 
   add(user: Challenge) {
-    this.users.push(new Challenge(user));
+  	// Find user if already in model
+    let usr = this.users.find(({ id}) => id === user.id)
+    
+    // If user is not in model, then add user to model
+    if (usr === undefined)
+    {
+      this.users.push(new Challenge(user));
+      this._commit(this.users);
+    }
+    else 
+    // If the user is already in the model, update user record to latest...
+    if (usr.challenged !== user.challenged)
+    {
+      this.edit(usr.id, user);
+    }
+  }
 
+  delete(_id: string[]) { // REVIEW: What is this for?
+    this.users = this.users.filter(({ id }) => _id.includes(id));
     this._commit(this.users);
+  }
+
+  challenge(id: string) {
+    
   }
 
   edit(id: string, userToEdit: Challenge) {
@@ -37,15 +58,9 @@ export class ChallengeService {
     this._commit(this.users);
   }
 
-  delete(_id: string) {
-    this.users = this.users.filter(({ id }) => id !== _id);
-
-    this._commit(this.users);
-  }
-
   toggle(_id: string) {
     this.users = this.users.map(user =>
-      user.id === _id ? new Challenge({ ...user, online: !user.online }) : user
+      user.id === _id ? new Challenge({ ...user }) : user
     );
 
     this._commit(this.users);

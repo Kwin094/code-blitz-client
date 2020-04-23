@@ -28,7 +28,7 @@ export class ChallengeView {
     this.app = document.querySelector('#root');
 
     this.form = this.createElement('form');
-    this.createInput({
+    /*this.createInput({
       key: 'inputName',
       type: 'text',
       placeholder: 'Name',
@@ -41,18 +41,18 @@ export class ChallengeView {
       name: 'winLossRecord'
     });
 
-    this.submitButton = this.createElement('button');
-    this.submitButton.textContent = 'Submit';
+    //this.submitButton = this.createElement('button');
+    //this.submitButton.textContent = 'Submit';
 
-    this.gameOnButton = this.createElement('button');
-    this.gameOnButton.textContent = 'Game On!';
+    //this.gameOnButton = this.createElement('button');
+    //this.gameOnButton.textContent = 'Game On!';
 
     this.form.append(
       this.inputName, 
       this.inputWinLossRecord, 
       this.submitButton, 
       this.gameOnButton);
-/*
+
     this.gameOnButton.addEventListener('click', event => {
       const { origin, pathname } = location;
           location.replace(origin+pathname+'?page=game');
@@ -65,13 +65,6 @@ export class ChallengeView {
 
     this._temporaryWinLossText = '';
     this._initLocalListeners();
-  }
-
-  get _nameText() {
-    return this.inputName.value;
-  }
-  get _winLossRecordText() {
-    return this.inputWinLossRecord.value;
   }
 
   _resetInput() {
@@ -106,7 +99,7 @@ export class ChallengeView {
     // Show default message
     if (users.length === 0) {
       const p = this.createElement('p');
-      p.textContent = 'Nothing to do! Add a user?';
+      p.textContent = 'No users are currently looking for a challenge.';
       this.userList.append(p);
     } else {
       // Create nodes
@@ -114,32 +107,22 @@ export class ChallengeView {
         const li = this.createElement('li');
         li.id = user.id;
 
-        const checkbox = this.createElement('input') as HTMLInputElement;
-        checkbox.type = 'checkbox';
-        checkbox.checked = user.online;
-
         const spanUser = this.createElement('span');
 
         const spanAge = this.createElement('span') as HTMLInputElement;
-        spanAge.contentEditable = 'true';
-        spanAge.classList.add('editable');
+        //spanAge.contentEditable = 'true';
+        //spanAge.classList.add('editable');
 
-        if (user.online) {
-          const strikeName = this.createElement('s');
-          strikeName.textContent = user.name;
-          spanUser.append(strikeName);
+        spanUser.textContent = user.name;
+        spanAge.textContent = user.winLossRecord;
 
-          const strikeAge = this.createElement('s');
-          strikeAge.textContent = user.winLossRecord;
-          spanAge.append(strikeAge);
-        } else {
-          spanUser.textContent = user.name;
-          spanAge.textContent = user.winLossRecord;
-        }
+        const challengeButton = this.createElement('button', 'challenge');
+        challengeButton.textContent = 'Challenge';
 
-        const deleteButton = this.createElement('button', 'delete');
-        deleteButton.textContent = 'Delete';
-        li.append(checkbox, spanUser, spanAge, deleteButton);
+        const acceptChallengeButton = this.createElement('button', 'accept');
+        acceptChallengeButton.textContent = "Accept Challenge";
+        acceptChallengeButton.style.visibility = user.challenged ? 'visible' : 'hidden';
+        li.append(spanUser, spanAge, challengeButton, acceptChallengeButton);
 
         // Append nodes
         this.userList.append(li);
@@ -149,14 +132,14 @@ export class ChallengeView {
 
   _initLocalListeners() {
     this.userList.addEventListener('input', event => {
-      if ((event.target as any).className === 'editable') {
+      /*if ((event.target as any).className === 'editable') {
         this._temporaryWinLossText = (event.target as any).innerText;
-      }
+      }*/
     });
   }
 
   bindStartChallenge(handler: HandleStartChallenge) {
-    this.gameOnButton.addEventListener('click', event => {
+    /*this.gameOnButton.addEventListener('click', event => {
       //
       // NOTE: Passing a Challenge object is probably 
       // not needed, but I'm just continuing with
@@ -168,13 +151,12 @@ export class ChallengeView {
       //
       handler(new Challenge({
         name: this._nameText,
-        winLossRecord: this._winLossRecordText,
-        online: true/*online*/}))
-    });
+        winLossRecord: this._winLossRecordText}))
+    });*/
   }
 
   bindAddUser(handler: Function) {
-    this.form.addEventListener('submit', event => {
+    /*this.form.addEventListener('submit', event => {
       event.preventDefault();
 
       if (this._nameText) {
@@ -184,21 +166,31 @@ export class ChallengeView {
         });
         this._resetInput();
       }
-    });
+    });*/
   }
 
-  bindDeleteUser(handler: Function) {
+  bindChallengeUser(handler: Function) {
     this.userList.addEventListener('click', event => {
-      if ((event.target as any).className === 'delete') {
+      if ((event.target as any).className === 'challenge') {
         const id = (event.target as any).parentElement.id;
-
+        
         handler(id);
       }
     });
   }
 
+  bindAcceptChallenge(handler: Function) {
+    this.userList.addEventListener('click', event => {
+      if ((event.target as any).className === 'accept') {
+        const id = (event.target as any).parentElement.id;
+
+        handler(id);
+      }
+    })
+  }
+
   bindEditUser(handler: Function) {
-    this.userList.addEventListener('focusout', event => {
+    /*this.userList.addEventListener('focusout', event => {
       if (this._temporaryWinLossText) {
         const id = (event.target as any).parentElement.id;
         const key = 'winLossRecord';
@@ -206,16 +198,6 @@ export class ChallengeView {
         handler(id, { [key]: this._temporaryWinLossText });
         this._temporaryWinLossText = '';
       }
-    });
-  }
-
-  bindToggleUser(handler: Function) {
-    this.userList.addEventListener('change', event => {
-      if ((event.target as any).type === 'checkbox') {
-        const id = (event.target as any).parentElement.id;
-
-        handler(id);
-      }
-    });
+    });*/
   }
 }

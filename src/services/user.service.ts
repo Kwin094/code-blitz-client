@@ -13,9 +13,27 @@ export class UserService {
 
     public findUser(userInfo:UserInfo)
     {
-        return Fetch('/user/'+userInfo.email+'.'+userInfo.password, {
-            method: 'GET',
+        return Fetch('/user/' + userInfo.email + '.' + userInfo.password, {
+            method: 'GET'
         })
         .then(res => res && res.json());
+    }
+
+    public updateChallengers(id:String, challengeid = null)
+    {
+        if (challengeid === null)
+        {
+            return Fetch('/user/' + id, {
+                method: 'GET'
+            })
+            .then(res => res && res.json());
+        }
+        else
+        {
+            return Fetch('/user/' + id, {
+                method: 'POST',
+                body: JSON.stringify({_id: challengeid})
+            })
+        }
     }
 }

@@ -26,5 +26,9 @@ export class UserInfoRoutes {
         .post(this.userInfoController.addNewUser);
 
         app.route('/user/:email.:password').get(this.userInfoController.authUser);
+
+        app.route('/user/:_id')
+        .get(this.userInfoController.getUserData)
+        .post(this.userInfoController.updateChallenges);
     }
 }
