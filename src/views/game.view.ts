@@ -1,7 +1,6 @@
 import { GameToken, Location, locations } from '../models/client.game.model';
 import { HandleMoveToken } from '../services/game.service';
 
-
 export class GameView {
     private app: HTMLElement;
 
@@ -26,7 +25,7 @@ export class GameView {
                 <div class='flex2'>
                     <div class='flex3'>
                         <div class='code-editor'>
-                            <ul id='code' />
+                            <ul style='display: block' id='code' />
                         </div>
                         <div id='label'>Token Bank</div>
                         <div class='token-container'>
@@ -73,7 +72,6 @@ export class GameView {
             
         `;
         this.app.innerHTML = html; 
-
 
         //POP UP CODE START:
         var modal = document.getElementById("myModal");
@@ -123,24 +121,57 @@ export class GameView {
         // clear any prior tokens
         this.ulTokens[location].innerText = '';
         let indentationLevel = 0;
+        let parenNesting = 0;
+        let startOfLine = true;
         tokens.forEach((token) => {
-            const li = document.createElement('li') as HTMLLIElement;
-            li.id = token.id;
-            li.innerHTML = token.token;
-            li.classList.add(token.type);
-            switch (token.token) {
-                case '{':
-                    indentationLevel++;
-                    li.classList.add('open-curly-bracket');
-                    break;
-                case '}':
-                    indentationLevel--;
-                    li.classList.add('close-curly-bracket');
-                    break;
-            } 
-            li.classList.add('indent-'+indentationLevel.toString());
-            this.ulTokens[location].appendChild(li);
+            parenNesting += [0,1,-1]['()'.indexOf(token.token)+1];
+
+            const newlineChange = 
+                (location!=='code' || parenNesting>0) ? 
+                    null : [null,1,-1,0]['{};'.indexOf(token.token)+1];
+
+            if (newlineChange) {
+                if(newlineChange>0)
+                    this.newlineMarkup(this.ulTokens[location]);
+                indentationLevel += newlineChange;
+            }
+            
+            if (startOfLine) {
+                this.indentationMarkup(this.ulTokens[location],indentationLevel);
+                startOfLine = false;
+            }
+            this.tokenMarkup(this.ulTokens[location], token);
+
+            if (newlineChange !== null) 
+                this.newlineMarkup(this.ulTokens[location]);
+
+            startOfLine = newlineChange !== null;
         });   
+    }
+
+    private tokenMarkup(el: HTMLUListElement, token : GameToken)
+    {
+        const li = document.createElement('li') as HTMLLIElement;
+        li.id = token.id;
+        li.innerHTML = token.token;
+        li.classList.add(token.type);
+        el.appendChild(li);
+    }    
+
+    private newlineMarkup(el: HTMLUListElement)
+    {
+        el.appendChild(
+            document.createElement('br')
+        );
+    }    
+
+    private indentationMarkup(el: HTMLUListElement, indentationLevel: number)
+    {
+        for (let i=0; i<indentationLevel; i++) {
+            const indent = (document.createElement('span') as HTMLSpanElement);
+            indent.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;';
+            el.appendChild(indent);
+        }
     }
    
 }
