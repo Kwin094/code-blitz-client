@@ -127,7 +127,7 @@ export class GameView {
     this.ulTokens[location].innerText = '';
 
     const newlineMarkup = '<br/>&nbsp;<br/>';
-    const indentMarkup = '&nbsp;&nbsp;+&nbsp;&nbsp;';
+    const indentMarkup = '&nbsp;&nbsp;&nbsp;&nbsp;';
     const cursorPlaceholderMarkup = 'I';
 
     let parenNesting = 0;
@@ -137,8 +137,60 @@ export class GameView {
       formattedTokens = tokens.map( token =>
         ({ gameToken: token }) );
     else
-      formattedTokens = tokens.reduce(
-        (prev, token, index) => 
+      formattedTokens = codeTokensFormatter();
+
+    //
+    // Render / Add tokens and markup to DOM...
+    //
+    formattedTokens.forEach((tokenOrMarkup) => {
+      // Render game tokens...
+      if (tokenOrMarkup.gameToken)
+        tokenMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.gameToken
+        );
+      // Render newlines with indentation...
+      else if (tokenOrMarkup.markUp === newlineMarkup) { 
+        spanMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.markUp
+        );
+        spanMarkup(
+          this.ulTokens[location], 
+          indentMarkup
+            .replace(indentMarkup,(tokenOrMarkup.indentationLevel||0).toString())
+        );
+      // Render other markup, like cursor placeholders...
+      } else {
+        spanMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.markUp,
+          tokenOrMarkup.markUp===cursorPlaceholderMarkup && 'cursor' 
+        );
+      }
+    });
+
+    function spanMarkup(el: HTMLUListElement, markup: string, className ?: string)
+    {
+      const html = (document.createElement('span') as HTMLSpanElement);
+      html.innerHTML = markup;
+      if (className)
+        html.classList.add(className);
+      el.appendChild(html);
+    }  
+
+    function tokenMarkup(el: HTMLUListElement, token : GameToken)
+    {
+      const li = document.createElement('li') as HTMLLIElement;
+      li.id = token.id;
+      li.innerHTML = token.token;
+      li.classList.add(token.type);
+      el.appendChild(li);
+    }       
+
+    function codeTokensFormatter() : TokenOrMarkup[]
+    {
+      return tokens.reduce( (prev, token, index) => 
         {
           // Default assumptions to speed test logic;
           // see comments below about these variables...
@@ -180,53 +232,11 @@ export class GameView {
           return prev;
         },
         // Start out all code markup with a cursor placeholder
-        [ {markUp:newlineMarkup}, {markUp: cursorPlaceholderMarkup} ] as TokenOrMarkup[]
+        [ 
+          {markUp:newlineMarkup}, 
+          {markUp: cursorPlaceholderMarkup} 
+        ] as TokenOrMarkup[]
       );
-
-    //
-    // Render / Add tokens and markup to DOM...
-    //
-    formattedTokens.forEach((tokenOrMarkup) => {
-      if (tokenOrMarkup.gameToken)
-        this.tokenMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.gameToken
-        );
-      else if (tokenOrMarkup.markUp === newlineMarkup) { 
-        this.spanMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.markUp
-        );
-        this.spanMarkup(
-          this.ulTokens[location], 
-          indentMarkup
-            .replace('+',(tokenOrMarkup.indentationLevel||0).toString())
-        );
-      } else {
-        this.spanMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.markUp,
-          tokenOrMarkup.markUp===cursorPlaceholderMarkup && 'cursor' 
-        );
-      }
-    });
+    }
   }
-
-  private spanMarkup(el: HTMLUListElement, markup: string, className ?: string)
-  {
-    const html = (document.createElement('span') as HTMLSpanElement);
-    html.innerHTML = markup;
-    if (className)
-      html.classList.add(className);
-    el.appendChild(html);
-  }  
-
-  private tokenMarkup(el: HTMLUListElement, token : GameToken)
-  {
-    const li = document.createElement('li') as HTMLLIElement;
-    li.id = token.id;
-    li.innerHTML = token.token;
-    li.classList.add(token.type);
-    el.appendChild(li);
-  }       
 }
