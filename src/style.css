@@ -273,7 +273,9 @@ div.code-editor span.cursor:hover {
 }
 
 div.code-editor span.cursor {
-  padding: 6px;
+  padding: 2px;
+  padding-top: 6px;
+  padding-bottom: 6px;
   color: transparent
 }
 
