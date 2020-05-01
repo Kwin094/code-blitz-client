@@ -243,14 +243,18 @@ div.code-editor ul {
   display: flex;
 }
 
-div.code-editor li{
+div.code-editor li {
   display: inline;
-  padding:2px;
+  padding: 6px;
   background-color: transparent;
   color: #ffffff;
+  border: solid rgb(43, 43, 43) 1px;
+  margin: 0px !important;
 }
 
-
+div.code-editor li:hover {
+  background-color: rgb(61, 70, 70);
+}
 
 /*TOKEN BANK*/
 #label{
