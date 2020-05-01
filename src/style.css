@@ -236,6 +236,7 @@ div.code-editor{
   margin-top:15px;
   margin-left:10px;
   margin-right:10px;
+  line-height: 28px;
 }
 
 div.code-editor ul {
@@ -265,7 +266,6 @@ div.code-editor span.cursor {
 
 div.code-editor span.cursor:hover {
   color: red;
-  opacity: 0.8;
   font-weight: bold;
   border-radius: 4px;  
   border: solid lightgray 1px;

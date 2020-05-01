@@ -2,7 +2,7 @@ import { GameToken, Location, locations } from '../models/client.game.model';
 import { HandleMoveToken } from '../services/game.service';
 
 export class GameView {
-  private app: HTMLElement;
+  protected app: HTMLElement;
 
   private ulTokens : {
     [location:string/*Location*/] : HTMLUListElement
@@ -13,6 +13,8 @@ export class GameView {
 
     const html = `
       <div class='game-page'>
+        <style id='dynamic-styles'>
+        </style>
         <div class='flex5'>
           <div id='prompt'>PROMPT: Write a program to print out 10 numbers</div>
           <div id='language'>Javascript</div>                    
@@ -126,66 +128,50 @@ export class GameView {
     // clear any prior tokens
     this.ulTokens[location].innerText = '';
 
-    const newlineMarkup = '<br/>&nbsp;<br/>';
-    const indentMarkup = '&nbsp;&nbsp;&nbsp;&nbsp;';
+    const newlineMarkup = '<br/>';
+    const indentMarkup = '&nbsp;&nbsp;&nbsp;&nbsp;|';
     const cursorPlaceholderMarkup = 'I';
 
     let parenNesting = 0;
     let indentationLevel = 0;
 
-    if (location!=='code')
-      formattedTokens = tokens.map( token =>
-        ({ gameToken: token }) );
-    else
-      formattedTokens = codeTokensFormatter();
-
-    //
-    // Render / Add tokens and markup to DOM...
-    //
-    formattedTokens.forEach((tokenOrMarkup) => {
-      // Render game tokens...
-      if (tokenOrMarkup.gameToken)
-        tokenMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.gameToken
-        );
-      // Render newlines with indentation...
-      else if (tokenOrMarkup.markUp === newlineMarkup) { 
-        spanMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.markUp
-        );
-        for (let indent = (tokenOrMarkup.indentationLevel||0); indent--; )
-          spanMarkup(this.ulTokens[location], indentMarkup);
-      // Render other markup, like cursor placeholders...
-      } else {
-        spanMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.markUp,
-          tokenOrMarkup.markUp===cursorPlaceholderMarkup && 'cursor' 
-        );
-      }
-    });
-
-    function spanMarkup(el: HTMLUListElement, markup: string, className ?: string)
+    const placeCursor = (ev: MouseEvent) =>
     {
-      const html = (document.createElement('span') as HTMLSpanElement);
-      html.innerHTML = markup;
-      if (className)
-        html.classList.add(className);
-      el.appendChild(html);
-    }  
+      const targ = ev.target as HTMLSpanElement;
+      const dynamicStyles = 
+        document.getElementById('dynamic-styles') as HTMLStyleElement;
+      dynamicStyles.innerText = `
+        div.code-editor span.${targ.className.split(' ').join('.')} 
+        {
+          color: red;
+          font-weight: bold;
+        }
+      `;
+    }
 
-    function tokenMarkup(el: HTMLUListElement, token : GameToken)
+    const spanMarkup = (parent: HTMLUListElement, markup: string, index = 0) =>
+    { 
+      const elem = (document.createElement('span') as HTMLSpanElement);
+      elem.innerHTML = markup;
+
+      // Make cursor placeholders active in the UI
+      if (markup===cursorPlaceholderMarkup) {
+        elem.className = ('cursor index-'+index);
+        elem.addEventListener("click", placeCursor);
+      }
+      parent.appendChild(elem);
+    }
+
+    const tokenMarkup = (el: HTMLUListElement, token : GameToken) =>
     {
       const li = document.createElement('li') as HTMLLIElement;
       li.id = token.id;
       li.innerHTML = token.token;
       li.classList.add(token.type);
       el.appendChild(li);
-    }       
+    }
 
-    function codeTokensFormatter() : TokenOrMarkup[]
+    const codeTokensFormatter = () =>
     {
       return tokens.reduce( (prev, token, index) => 
         {
@@ -237,5 +223,40 @@ export class GameView {
         ] as TokenOrMarkup[]
       );
     }
+
+    if (location!=='code')
+      formattedTokens = tokens.map( token =>
+        ({ gameToken: token }) );
+    else
+      formattedTokens = codeTokensFormatter();
+
+    //
+    // Render / Add tokens and markup to DOM...
+    //
+    formattedTokens.forEach((tokenOrMarkup,index) => {
+      // Render game tokens...
+      if (tokenOrMarkup.gameToken)
+        tokenMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.gameToken
+        );
+      // Render newlines with indentation...
+      else if (tokenOrMarkup.markUp === newlineMarkup) { 
+        spanMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.markUp
+        );
+        for (let indent = (tokenOrMarkup.indentationLevel||0); indent--; )
+          spanMarkup(this.ulTokens[location], indentMarkup);
+      // Render other markup, like cursor placeholders...
+      } else {
+        spanMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.markUp,
+          index
+        );
+      }
+    });
+
   }
 }
