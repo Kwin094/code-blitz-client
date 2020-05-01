@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 
 mongoose.pluralize(null);
 
-const ExerciseToken = mongoose.model('ForLoop', ExerciseTokenSchema);
+const ExerciseToken = mongoose.model('Sort', ExerciseTokenSchema);
 
 export class ExerciseTokenController{ 
 /*
