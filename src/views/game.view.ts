@@ -155,11 +155,8 @@ export class GameView {
           this.ulTokens[location], 
           tokenOrMarkup.markUp
         );
-        spanMarkup(
-          this.ulTokens[location], 
-          indentMarkup
-            .replace(indentMarkup,(tokenOrMarkup.indentationLevel||0).toString())
-        );
+        for (let indent = (tokenOrMarkup.indentationLevel||0); indent--; )
+          spanMarkup(this.ulTokens[location], indentMarkup);
       // Render other markup, like cursor placeholders...
       } else {
         spanMarkup(
@@ -212,6 +209,7 @@ export class GameView {
             prev.push({markUp: cursorPlaceholderMarkup, indentationLevel});
             indentationLevel++;
             prev.push({ gameToken: token, indentationLevel });
+            prev.push({markUp: cursorPlaceholderMarkup, indentationLevel});
             prev.push({markUp:newlineMarkup, indentationLevel});
             detectPostNewline = false;
           } else
@@ -233,8 +231,9 @@ export class GameView {
         },
         // Start out all code markup with a cursor placeholder
         [ 
-          {markUp:newlineMarkup}, 
-          {markUp: cursorPlaceholderMarkup} 
+          {markUp: cursorPlaceholderMarkup},
+          {markUp: newlineMarkup}, 
+          {markUp: cursorPlaceholderMarkup}
         ] as TokenOrMarkup[]
       );
     }
