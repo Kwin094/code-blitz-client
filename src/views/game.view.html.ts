@@ -5,8 +5,9 @@ export const html =
     </style>
     <div class='flex5'>
       <div id='prompt'>PROMPT: Write a program to print out 10 numbers</div>
-      <div id='language'>Javascript</div>                    
-      <div id='timer'>TIMER &nbsp;<b>3:07</b></div>
+      <div id='language'> Javascript </div> 
+      <div id='timeName'> TIME </div>
+      <div id='timer'> </div>
     </div>
     <div class='conveyor-container'>
       <ul id='conveyor' />

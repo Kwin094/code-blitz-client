@@ -5,6 +5,9 @@ import {
   TokenOrMarkup,
   codeTokensFormatter
 } from './game.view.format.logic';
+import { Ellipse } from 'pixi.js';
+import { setMaxListeners } from 'cluster';
+import { setInterval } from 'timers';
 
 export const newlineMarkup = '<br/>';
 export const cursorPlaceholderMarkup = '|';
@@ -39,7 +42,8 @@ export class GameView
         ) as HTMLUListElement;
     })
 
-    this.initializePopup();
+    // Initialize timer and popup code
+    this.initializePopup(this.initializeTimer());
   }
 
   // Primarily calls service handler() to move tokens between
@@ -204,7 +208,7 @@ export class GameView
     el.appendChild(li);
   }
 
-  private initializePopup() 
+  private initializePopup(intervalID) 
   {
     var modal = document.getElementById("myModal");
 
@@ -217,6 +221,7 @@ export class GameView
     // When the user clicks the button, open the modal 
     btn.onclick = function() {
       modal.style.display = "block";
+      clearInterval(intervalID);
     }
 
     // When the user clicks on <span> (x), close the modal
@@ -231,4 +236,44 @@ export class GameView
       }
     } 
   }
+
+  private initializeTimer()
+  {
+       //TIMER
+        //Define vars to hold time values
+        let seconds = 0;
+        let minutes = 0;
+    
+        //Define vars to hold "display" value
+        let displaySeconds : string;
+        let displayMinutes : string;
+        
+        //Stopwatch function (logic to determine when to increment next value, etc.)
+        function stopWatch(){
+            seconds++;
+            //Logic to determine when to increment next value
+            if(seconds / 60 === 1){
+                seconds = 0;
+                 minutes++;
+            }
+
+            // If seconds/minutes/hours are only one digit, 
+            // add a leading 0 to the value
+            if(seconds < 10)
+                displaySeconds = "0" + seconds.toString();
+            else
+                displaySeconds = seconds.toString();
+            
+            if(minutes < 10)
+                displayMinutes = "0" + minutes.toString();
+            else
+                displayMinutes = minutes.toString();
+            
+            //Display updated time values to user
+            document.getElementById("timer").innerHTML 
+              = displayMinutes + ":" + displaySeconds;
+        }
+        return window.setInterval(stopWatch, 1000);    
+  }
+
 }
