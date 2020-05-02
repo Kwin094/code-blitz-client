@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { UserInfoSchema } from '../models/UserInfoModel';
 import { Request, Response } from 'express';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Singleton } from '../utils/singleton';
 
 const SALT_WORK_FACTOR = 10;

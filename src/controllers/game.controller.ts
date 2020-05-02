@@ -31,7 +31,7 @@ export class GameController {
     this.gameView.bindMoveToken(this.handleMoveToken);   
   }
 
-  handleMoveToken : HandleMoveToken = (tokenID,direction) => {
-    this.gameService.moveToken(tokenID,direction);
+  handleMoveToken : HandleMoveToken = (tokenID,direction,codeCursorTokenIndex:number) => {
+    this.gameService.moveToken(tokenID,direction,codeCursorTokenIndex);
   }
 }
