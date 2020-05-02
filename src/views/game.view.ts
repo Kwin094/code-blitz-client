@@ -2,25 +2,158 @@ import { html } from './game.view.html';
 import { GameToken, Location, locations } from '../models/client.game.model';
 import { HandleMoveToken } from '../services/game.service';
 import { 
-  newlineMarkup, 
   TokenOrMarkup,
-  cursorPlaceholderMarkup,
   codeTokensFormatter
 } from './game.view.format.logic';
 
-export class GameView {
-  protected app: HTMLElement;
+export const newlineMarkup = '<br/>';
+export const cursorPlaceholderMarkup = '|';
+const indentMarkup = '&nbsp;&nbsp;&nbsp;&nbsp;|';
+
+export class GameView 
+{
+  private app: HTMLElement;
 
   private ulTokens : {
     [location:string/*Location*/] : HTMLUListElement
   } = {};
+
+  // Default to 'null' insertion point, which will flag our
+  // service to insert new code-editor tokens at the end (last)...
+  private tokenInsertionIndex : number = null; 
+
+  private formattedCodeTokens : TokenOrMarkup[];
 
   constructor() {
     this.app = document.getElementById('root');
 
     this.app.innerHTML = html; 
 
-    //POP UP CODE START:
+    locations.forEach((location)=>{
+      this.ulTokens[location] 
+        = document.getElementById(
+          location.replace(' ','_') // spaces not valid in HTML IDs
+        ) as HTMLUListElement;
+    })
+
+    this.initializePopup();
+  }
+
+  public bindMoveToken(handler: HandleMoveToken) {
+    locations.forEach((location) => {
+      this.ulTokens[location].addEventListener('click', 
+      event => {
+        const targ = (event.target as HTMLUListElement);
+        // All LI elements contain tokens and trigger model updates,
+        // any other element types are markup which do not update the model...
+        if (targ.tagName.toLowerCase()==='li') 
+          handler(targ.id,1);
+      });
+    });
+  }
+  
+  public display(location : Location, tokens : GameToken[]) 
+  {
+    let formattedTokens : TokenOrMarkup[];
+
+    // clear any prior tokens
+    this.ulTokens[location].innerText = '';
+
+    if (location!=='code')
+      formattedTokens = tokens.map( token =>
+        ({ gameToken: token }) );
+    else {
+      formattedTokens = codeTokensFormatter(tokens);
+      // Save formatted code tokens in class member,
+      // for later usage to associate insertion locations...
+      this.formattedCodeTokens = formattedTokens;
+    }
+
+    //
+    // Render / Add tokens and markup to DOM...
+    //
+    formattedTokens.forEach((tokenOrMarkup,index) => {
+      // Render game tokens...
+      if (tokenOrMarkup.gameToken)
+        this.tokenMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.gameToken
+        );
+      // Render newlines with indentation...
+      else if (tokenOrMarkup.markUp === newlineMarkup) { 
+        this.spanMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.markUp
+        );
+        for (let indent = (tokenOrMarkup.indentationLevel||0); indent--; )
+          this.spanMarkup(this.ulTokens[location], indentMarkup);
+      // Render other markup, like cursor placeholders...
+      } else {
+        this.spanMarkup(
+          this.ulTokens[location], 
+          tokenOrMarkup.markUp,
+          index
+        );
+      }
+    });
+  }
+
+  private placeCursor(index: number, ev: MouseEvent)
+  {
+    const targ = ev.target as HTMLSpanElement;
+    const dynamicStyles = 
+      document.getElementById('dynamic-styles') as HTMLStyleElement;
+
+    // Convert and store formattedTokens index into tokens index, since
+    // we may need the tokens index to pass our 'insertion point' 
+    // to the model service for token placement in the code-editor...
+    this.tokenInsertionIndex = null;
+    for ( let i=index; this.tokenInsertionIndex===null 
+            && i < this.formattedCodeTokens.length; i++ ) 
+      if (this.formattedCodeTokens[i].gameToken) 
+        this.tokenInsertionIndex = 
+          // NOTE: First valid tokenIndex is 0 which is why 
+          // we test for presence of 'gameToken' above...
+          this.formattedCodeTokens[i].tokenIndex; 
+
+    // Highlight insertion point by creating a css selector
+    // with the same same css classes as the insertion placeholder
+    // selected via 'click' event....
+    dynamicStyles.innerText = `
+      div.code-editor span.${targ.className.split(' ').join('.')} 
+      {
+        color: red;
+        font-weight: bold;
+      }
+    `;
+  }
+
+  private spanMarkup(parent: HTMLUListElement, markup: string, index = 0)
+  { 
+    const elem = (document.createElement('span') as HTMLSpanElement);
+    elem.innerHTML = markup;
+
+    // Make cursor placeholders active in the UI
+    if (markup===cursorPlaceholderMarkup) {
+      elem.className = ('cursor index-'+index);
+      elem.addEventListener("click", 
+        this.placeCursor.bind(this,index) 
+      );
+    }
+    parent.appendChild(elem);
+  }
+
+  private tokenMarkup(el: HTMLUListElement, token : GameToken)
+  {
+    const li = document.createElement('li') as HTMLLIElement;
+    li.id = token.id;
+    li.innerHTML = token.token;
+    li.classList.add(token.type);
+    el.appendChild(li);
+  }
+
+  private initializePopup() 
+  {
     var modal = document.getElementById("myModal");
 
     // Get the button that opens the modal
@@ -44,106 +177,6 @@ export class GameView {
       if (event.target == modal) {
         modal.style.display = "none";
       }
-    }
-    //END POP UP CODE.
-
-    locations.forEach((location)=>{
-      this.ulTokens[location] 
-        = document.getElementById(
-          location.replace(' ','_') // spaces not valid in HTML IDs
-        ) as HTMLUListElement;
-    })
+    } 
   }
-
-  public bindMoveToken(handler: HandleMoveToken) {
-    locations.forEach((location) => {
-      this.ulTokens[location].addEventListener('click', 
-      event => {
-        const targ = (event.target as HTMLUListElement);
-        // All LI elements contain tokens and trigger model updates,
-        // any other element types are markup which do not update the model...
-        if (targ.tagName.toLowerCase()==='li') 
-          handler(targ.id,1);
-      });
-    });
-  }
-  
-  public display(location : Location, tokens : GameToken[]) 
-  {
-    let formattedTokens : TokenOrMarkup[];
-    const indentMarkup = '&nbsp;&nbsp;&nbsp;&nbsp;|';
-
-    // clear any prior tokens
-    this.ulTokens[location].innerText = '';
-
-    if (location!=='code')
-      formattedTokens = tokens.map( token =>
-        ({ gameToken: token }) );
-    else
-      formattedTokens = codeTokensFormatter(tokens);
-
-    //
-    // Render / Add tokens and markup to DOM...
-    //
-    formattedTokens.forEach((tokenOrMarkup,index) => {
-      // Render game tokens...
-      if (tokenOrMarkup.gameToken)
-        tokenMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.gameToken
-        );
-      // Render newlines with indentation...
-      else if (tokenOrMarkup.markUp === newlineMarkup) { 
-        spanMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.markUp
-        );
-        for (let indent = (tokenOrMarkup.indentationLevel||0); indent--; )
-          spanMarkup(this.ulTokens[location], indentMarkup);
-      // Render other markup, like cursor placeholders...
-      } else {
-        spanMarkup(
-          this.ulTokens[location], 
-          tokenOrMarkup.markUp,
-          index
-        );
-      }
-    });
-  }
-}
-
-function placeCursor(ev: MouseEvent)
-{
-  const targ = ev.target as HTMLSpanElement;
-  const dynamicStyles = 
-    document.getElementById('dynamic-styles') as HTMLStyleElement;
-  dynamicStyles.innerText = `
-    div.code-editor span.${targ.className.split(' ').join('.')} 
-    {
-      color: red;
-      font-weight: bold;
-    }
-  `;
-}
-
-function spanMarkup(parent: HTMLUListElement, markup: string, index = 0)
-{ 
-  const elem = (document.createElement('span') as HTMLSpanElement);
-  elem.innerHTML = markup;
-
-  // Make cursor placeholders active in the UI
-  if (markup===cursorPlaceholderMarkup) {
-    elem.className = ('cursor index-'+index);
-    elem.addEventListener("click", placeCursor);
-  }
-  parent.appendChild(elem);
-}
-
-function tokenMarkup(el: HTMLUListElement, token : GameToken)
-{
-  const li = document.createElement('li') as HTMLLIElement;
-  li.id = token.id;
-  li.innerHTML = token.token;
-  li.classList.add(token.type);
-  el.appendChild(li);
 }

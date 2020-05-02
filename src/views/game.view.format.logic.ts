@@ -1,10 +1,9 @@
 import { GameToken } from '../models/client.game.model';
-
-export const newlineMarkup = '<br/>';
-export const cursorPlaceholderMarkup = 'I';
+import { newlineMarkup, cursorPlaceholderMarkup } from './game.view';
 
 export interface TokenOrMarkup {
   gameToken ?: GameToken,
+  tokenIndex ?: number,
   markUp ?: string,
   indentationLevel ?: number
 }
@@ -13,7 +12,7 @@ export function codeTokensFormatter(tokens : GameToken[])
 {
   let parenNesting = 0;
   let indentationLevel = 0;  
-  return tokens.reduce( (prev, token, index) => 
+  return tokens.reduce( (prev, token, tokenIndex) => 
     {
       // Default assumptions to speed test logic;
       // see comments below about these variables...
@@ -34,17 +33,17 @@ export function codeTokensFormatter(tokens : GameToken[])
         prev.push({markUp:newlineMarkup, indentationLevel});
         prev.push({markUp: cursorPlaceholderMarkup, indentationLevel});
         indentationLevel++;
-        prev.push({ gameToken: token, indentationLevel });
+        prev.push({ gameToken: token, tokenIndex, indentationLevel });
         prev.push({markUp: cursorPlaceholderMarkup, indentationLevel});
         prev.push({markUp:newlineMarkup, indentationLevel});
         detectPostNewline = false;
       } else
-        prev.push({ gameToken: token, indentationLevel });
+        prev.push({ gameToken: token, tokenIndex, indentationLevel });
 
       // Peek ahead one for close of block,
       // so that we can reduce indentation level now
       // before presenting the close block ('}')
-      if ((index+1)<tokens.length && tokens[index+1].token === '}')
+      if ((tokenIndex+1)<tokens.length && tokens[tokenIndex+1].token === '}')
         indentationLevel--;
 
       prev.push({markUp: cursorPlaceholderMarkup, indentationLevel});
