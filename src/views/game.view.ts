@@ -13,6 +13,7 @@ const indentMarkup = '&nbsp;&nbsp;&nbsp;&nbsp;|';
 export class GameView 
 {
   private app: HTMLElement;
+  private dynamicStyles : HTMLStyleElement;
 
   private ulTokens : {
     [location:string/*Location*/] : HTMLUListElement
@@ -20,7 +21,7 @@ export class GameView
 
   // Default to 'null' insertion point, which will flag our
   // service to insert new code-editor tokens at the end (last)...
-  private tokenInsertionIndex : number = null; 
+  private codeCursorTokenIndex : number = null; 
 
   private formattedCodeTokens : TokenOrMarkup[];
 
@@ -28,17 +29,22 @@ export class GameView
     this.app = document.getElementById('root');
 
     this.app.innerHTML = html; 
+    this.dynamicStyles = 
+      document.getElementById('dynamic-styles') as HTMLStyleElement;
 
     locations.forEach((location)=>{
       this.ulTokens[location] 
         = document.getElementById(
-          location.replace(' ','_') // spaces not valid in HTML IDs
+          location.replace(' ','_') // (spaces not valid in HTML IDs)
         ) as HTMLUListElement;
     })
 
     this.initializePopup();
   }
 
+  // Primarily calls service handler() to move tokens between
+  // location container in model; but also handles updating
+  // 'code cursor' if we are updating the code-editor window...
   public bindMoveToken(handler: HandleMoveToken) {
     locations.forEach((location) => {
       this.ulTokens[location].addEventListener('click', 
@@ -47,11 +53,37 @@ export class GameView
         // All LI elements contain tokens and trigger model updates,
         // any other element types are markup which do not update the model...
         if (targ.tagName.toLowerCase()==='li') 
-          handler(targ.id,1);
+        {
+          let index : number;
+          // if coming from token bank, then increment cursor after insert
+          switch (location) {
+            case 'token bank':
+              handler(targ.id,1,this.codeCursorTokenIndex);
+              index = this.findFormattedIndexOfToken(targ.id);
+              // Relies on current fact that every token is followed by 
+              // a cursor placholder...
+              index++;
+              break;
+            case 'code':
+              index = this.findFormattedIndexOfToken(targ.id);
+              handler(targ.id,1,this.codeCursorTokenIndex);
+              // Relies on current fact that every token is preceeded by 
+              // a cursor placholder...
+              index--;
+              break;
+            case 'conveyor':
+              return; // we're done, get out
+          }
+
+          this.placeCursor(index); 
+        }
       });
     });
   }
-  
+
+  //
+  // Display() gets called whenver our model changes...
+  //
   public display(location : Location, tokens : GameToken[]) 
   {
     let formattedTokens : TokenOrMarkup[];
@@ -98,29 +130,37 @@ export class GameView
     });
   }
 
-  private placeCursor(index: number, ev: MouseEvent)
+  public findFormattedIndexOfToken(tokenID:string)
   {
-    const targ = ev.target as HTMLSpanElement;
-    const dynamicStyles = 
-      document.getElementById('dynamic-styles') as HTMLStyleElement;
+    // Convert from token location back to formatted content location...
+    const index = this.formattedCodeTokens
+      .findIndex( (item) => (item.gameToken?.id === tokenID) );
+    return index;
+  }
 
+  private placeCursor(index: number)
+  {
     // Convert and store formattedTokens index into tokens index, since
     // we may need the tokens index to pass our 'insertion point' 
     // to the model service for token placement in the code-editor...
-    this.tokenInsertionIndex = null;
-    for ( let i=index; this.tokenInsertionIndex===null 
+    this.codeCursorTokenIndex = null;
+    for ( let i=index; this.codeCursorTokenIndex===null 
             && i < this.formattedCodeTokens.length; i++ ) 
       if (this.formattedCodeTokens[i].gameToken) 
-        this.tokenInsertionIndex = 
+        this.codeCursorTokenIndex = 
           // NOTE: First valid tokenIndex is 0 which is why 
           // we test for presence of 'gameToken' above...
           this.formattedCodeTokens[i].tokenIndex; 
+    this.highlightCursor(index);
+  }
 
+  private highlightCursor(index:number)
+  {
     // Highlight insertion point by creating a css selector
     // with the same same css classes as the insertion placeholder
     // selected via 'click' event....
-    dynamicStyles.innerText = `
-      div.code-editor span.${targ.className.split(' ').join('.')} 
+    this.dynamicStyles.innerText = `
+      div.code-editor span.${this.cursorCSSclasses(index).replace(/[ ]/g,'.')} 
       {
         color: red;
         font-weight: bold;
@@ -135,12 +175,17 @@ export class GameView
 
     // Make cursor placeholders active in the UI
     if (markup===cursorPlaceholderMarkup) {
-      elem.className = ('cursor index-'+index);
+      elem.className = (this.cursorCSSclasses(index));
       elem.addEventListener("click", 
         this.placeCursor.bind(this,index) 
       );
     }
     parent.appendChild(elem);
+  }
+
+  private cursorCSSclasses(index:number)
+  {
+    return 'cursor index-'+index;
   }
 
   private tokenMarkup(el: HTMLUListElement, token : GameToken)
