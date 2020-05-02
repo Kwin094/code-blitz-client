@@ -62,7 +62,7 @@ export class UserInfoController
         let challenger = singleton.challengers[req.params['_id']];
         if(challenger === undefined)
         {
-            challenger = {time: Date.now(), challenged: []};
+            challenger = {time: Date.now(), challenged: [], accepted: []};
             singleton.challengers[req.params['_id']] = challenger;
         }
         else
@@ -80,8 +80,6 @@ export class UserInfoController
             })
         });
 
-		// For records in Mongo matching our list of online challenges,
-		// get all the user info from the Mongo records
         UserInfo.find().where('_id').in(Object.keys(singleton.challengers)).exec((err, users) => {
             if(err)
             {
@@ -89,14 +87,12 @@ export class UserInfoController
             }
             
             let challengerData = [];
-            
-            // And add the user info for all users EXCEPT ourselves
-            // to the challengerData array...
-            users.forEach(user => { 
-                if(user['_id'] != req.params['_id']) // TODO: remove in order to see 'self'
+
+            users.forEach(user => {
                 challengerData.push({_id: user['_id'], name: user['name'],
                         wins: user['wins'], losses: user['losses'],
-                        challenged: singleton.challengers[user['_id']].challenged.includes(req.params['_id'])
+                        challenged: singleton.challengers[user['_id']].challenged.includes(req.params['_id']),
+                        accepted: singleton.challengers[user['_id']].accepted
                 });
             });
             res.json(challengerData);
@@ -105,11 +101,18 @@ export class UserInfoController
 
     public updateChallenges (req: Request, res: Response) 
     {
-        Object.keys(singleton.challengers).forEach((key) => console.log(singleton.challengers[key].challenged))
-        if(!singleton.challengers[req.params['_id']].challenged.includes(req.body['_id']))
-            singleton.challengers[req.params['_id']].challenged.push(req.body['_id']);
-        
-        res.send('Challenge sent');
+        if(req.body['_accepted'])
+        {
+            if(!singleton.challengers[req.body['_id']].accepted.includes(req.params['_id']))
+            singleton.challengers[req.body['_id']].accepted.push(req.params['_id']);
+            res.send('Challenge accepted sent');
+        }
+        else 
+        {
+            if(!singleton.challengers[req.params['_id']].challenged.includes(req.body['_id']))
+                singleton.challengers[req.params['_id']].challenged.push(req.body['_id']);
+                res.send('Challenge sent');
+        }
     }
 /*
     public getContactWithID (req: Request, res: Response) {           

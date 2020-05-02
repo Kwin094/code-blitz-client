@@ -1,5 +1,4 @@
 import { Challenge } from '../models/challenge.model';
-import { HandleStartChallenge } from '../controllers/challenge.controller';
 
 /**
  * @class View
@@ -16,78 +15,38 @@ interface Input {
 export class ChallengeView {
   private app: HTMLElement;
   private form: HTMLElement;
-  private submitButton: HTMLElement;
-  private gameOnButton: HTMLElement;
-  private inputName: HTMLInputElement;
-  private inputWinLossRecord: HTMLInputElement;
   private title: HTMLElement;
+  private userData: HTMLElement;
   private userList: HTMLElement;
-  private _temporaryWinLossText: string;
 
   constructor() {
     this.app = document.querySelector('#root');
 
     this.form = this.createElement('form');
-    /*this.createInput({
-      key: 'inputName',
-      type: 'text',
-      placeholder: 'Name',
-      name: 'name'
-    });
-    this.createInput({
-      key: 'inputWinLossRecord',
-      type: 'text',
-      placeholder: 'Win / Loss',
-      name: 'winLossRecord'
-    });
 
-    //this.submitButton = this.createElement('button');
-    //this.submitButton.textContent = 'Submit';
-
-    //this.gameOnButton = this.createElement('button');
-    //this.gameOnButton.textContent = 'Game On!';
-
-    this.form.append(
-      this.inputName, 
-      this.inputWinLossRecord, 
-      this.submitButton, 
-      this.gameOnButton);
-
-    this.gameOnButton.addEventListener('click', event => {
-      const { origin, pathname } = location;
-          location.replace(origin+pathname+'?page=game');
-    });
-*/
     this.title = this.createElement('h1');
     this.title.textContent = 'Challenge';
+    this.userData = this.createElement('div', 'userData');
     this.userList = this.createElement('ul', 'user-list');
-    this.app.append(this.title, this.form, this.userList);
-
-    this._temporaryWinLossText = '';
-    this._initLocalListeners();
-  }
-
-  _resetInput() {
-    this.inputName.value = '';
-    this.inputWinLossRecord.value = '';
-  }
-
-  createInput(
-    { key, type, placeholder, name }: Input = {
-      key: 'default',
-      type: 'text',
-      placeholder: 'default',
-      name: 'default'
-    }
-  ) {
-    this[key] = 
-    Object.assign(this.createElement('input'), { type, placeholder, name });
+    this.app.append(this.title, this.form, this.userData, this.userList);
   }
 
   createElement(tag: string, className?: string) {
     const element = document.createElement(tag);
     if (className) element.classList.add(className);
     return element;
+  }
+
+  displaySelf(user: Challenge) {
+    this.userData.setAttribute('style', 'white-space: pre;');
+    this.userData.style.width = '150px';
+    this.userData.style.height = '100px';
+    this.userData.style.background = 'white';
+    this.userData.style.border = '5px solid black';
+    this.userData.style.padding = '15px';
+    this.userData.style.margin = '10px';
+    this.userData.innerHTML = '<b>' + user.name + '</b>' + '\r\n\r\n'
+                          + "W/L: " + user.winLossRecord;
   }
 
   displayUsers(users: Challenge[]) {
@@ -109,9 +68,7 @@ export class ChallengeView {
 
         const spanUser = this.createElement('span');
 
-        const spanAge = this.createElement('span') as HTMLInputElement;
-        //spanAge.contentEditable = 'true';
-        //spanAge.classList.add('editable');
+        const spanAge = this.createElement('span');
 
         spanUser.textContent = user.name;
         spanAge.textContent = user.winLossRecord;
@@ -128,45 +85,6 @@ export class ChallengeView {
         this.userList.append(li);
       });
     }
-  }
-
-  _initLocalListeners() {
-    this.userList.addEventListener('input', event => {
-      /*if ((event.target as any).className === 'editable') {
-        this._temporaryWinLossText = (event.target as any).innerText;
-      }*/
-    });
-  }
-
-  bindStartChallenge(handler: HandleStartChallenge) {
-    /*this.gameOnButton.addEventListener('click', event => {
-      //
-      // NOTE: Passing a Challenge object is probably 
-      // not needed, but I'm just continuing with
-      // the MVC template pattern for now.
-      // (Feel free to remove/simplify/refactor...)
-      // We'll probably reflect challenge and game play
-      // "state" all in Mongo, and our services can 
-      // always get that information via a Mongoose query.
-      //
-      handler(new Challenge({
-        name: this._nameText,
-        winLossRecord: this._winLossRecordText}))
-    });*/
-  }
-
-  bindAddUser(handler: Function) {
-    /*this.form.addEventListener('submit', event => {
-      event.preventDefault();
-
-      if (this._nameText) {
-        handler({
-          name: this._nameText,
-          winLossRecord: this._winLossRecordText
-        });
-        this._resetInput();
-      }
-    });*/
   }
 
   bindChallengeUser(handler: Function) {
@@ -187,17 +105,5 @@ export class ChallengeView {
         handler(id);
       }
     })
-  }
-
-  bindEditUser(handler: Function) {
-    /*this.userList.addEventListener('focusout', event => {
-      if (this._temporaryWinLossText) {
-        const id = (event.target as any).parentElement.id;
-        const key = 'winLossRecord';
-
-        handler(id, { [key]: this._temporaryWinLossText });
-        this._temporaryWinLossText = '';
-      }
-    });*/
   }
 }

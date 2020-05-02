@@ -23,6 +23,7 @@ let app : object;
 const urlParams = new URLSearchParams(window.location.search);
 const page = urlParams.get('page');
 const session_id = urlParams.get('session_id');
+const challenge_id = urlParams.get('challenge_id');
 
 switch (page) {
     case 'signup':
@@ -39,7 +40,11 @@ switch (page) {
             new ChallengeView() );
         break;
     case 'game':
-        app = new GameController(new GameService(), new GameView());
+        app = new GameController(
+            session_id,
+            challenge_id,
+            new GameService(),
+            new GameView());
         break;
     case 'demo':
         break;        

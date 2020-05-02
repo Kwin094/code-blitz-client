@@ -15,7 +15,12 @@ export class GameController {
   // Use the constructor shortcut 'private' feature instead...
   //  private gameService : HandleMoveToken;
 
-  constructor(private gameService: GameService, private gameView: GameView) {
+  constructor(
+    private session_id: string,
+    private challeng_id: string,
+    private gameService: GameService,
+    private gameView: GameView
+    ) {
     // TODO: Study: Are constructor parameters added to 'this' class instance?
     locations.forEach((location)=>{
       this.gameService.bindTokenLocationChanged(location,

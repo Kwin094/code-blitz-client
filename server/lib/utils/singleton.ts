@@ -4,11 +4,7 @@ export class Singleton
 
     public challengers = {};
 
-    //public challengers:string[];
-    //public times:number[]
-    //public challenged:string[];
-
-    private constructor(){ /*this.challengers = []; this.times = []; this.challenged = []*/ }
+    private constructor(){}
 
     public static getInstance(): Singleton
     {

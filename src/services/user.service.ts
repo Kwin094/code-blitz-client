@@ -19,7 +19,7 @@ export class UserService {
         .then(res => res && res.json());
     }
 
-    public updateChallengers(id:String, challengeid = null)
+    public updateChallengers(id:String, challengeid = null, accepted = false)
     {
         if (challengeid === null)
         {
@@ -32,7 +32,7 @@ export class UserService {
         {
             return Fetch('/user/' + id, {
                 method: 'POST',
-                body: JSON.stringify({_id: challengeid})
+                body: JSON.stringify({_id: challengeid, _accepted: accepted})
             })
         }
     }
