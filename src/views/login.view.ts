@@ -15,14 +15,17 @@ export class LoginView {
         <div class='formCenter'>
             <form id='loginForm'>
                 <div class = 'box'>
-                    <img src="http://icon-library.com/images/blitz-icon/blitz-icon-18.jpg" alt="Blitz Icon" width="128" height="128">
+
+                    
+
+                    <img src="images/Codeblitz.png" alt="code Blitz" width="150" height="127"/>
                     <h1>Code Blitz</h1>
                     <div>
-                        <img src="http://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/mail-icon.png" alt="Mail Icon" width="20" height="20">
+                        <img src="images/user.png" alt="user icon"  width="20" height="20">
                         <input name='email' type='text' placeholder='Email' />
                     </div>
                     <div>
-                        <img src="https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/lock-24-512.png" alt="Lock Icon" width="20" height="20">
+                        <img src="images/lock.png" alt="Lock Icon" width="20" height="20">
                         <input name='password' type='password' placeholder='Password' />
                     </div>
                     <div>
@@ -36,7 +39,25 @@ export class LoginView {
             </form>
         </div>
         `;
+        
         this.app.innerHTML = html;
+        /*
+        //add under <div class = 'box'> in html section 
+        
+        <div id='timer'> </div>
+        <button id="timer" onclick="stopClock()">Stop Time</button>
+        
+        //this timer stops - Leave this here
+        var myVar = setInterval(myTimer, 1000);
+
+        function myTimer() {
+        var d = new Date();
+        var t = d.toLocaleTimeString();
+        document.getElementById("timer").innerHTML = t;
+        }
+        function stopClock(){
+            clearInterval(myVar);
+        }*/
     }
     
     public bindLoginUser(handler: HandleLoginUser)
