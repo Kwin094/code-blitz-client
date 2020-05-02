@@ -48,7 +48,8 @@ export class GameView
   public bindMoveToken(handler: HandleMoveToken) {
     locations.forEach((location) => {
       this.ulTokens[location].addEventListener('click', 
-      event => {
+      event => 
+      {
         const targ = (event.target as HTMLUListElement);
         // All LI elements contain tokens and trigger model updates,
         // any other element types are markup which do not update the model...
@@ -66,10 +67,14 @@ export class GameView
               break;
             case 'code':
               index = this.findFormattedIndexOfToken(targ.id);
+              let removingOpenBracket 
+                = this.formattedCodeTokens[index].gameToken.token === '{';
               handler(targ.id,1,this.codeCursorTokenIndex);
               // Relies on current fact that every token is preceeded by 
               // a cursor placholder...
               index--;
+              // TODO: Review this hack to adjust cursor position after '{' removal
+              if (removingOpenBracket) index-=2; 
               break;
             case 'conveyor':
               handler(targ.id,1,this.codeCursorTokenIndex);
@@ -118,8 +123,9 @@ export class GameView
           this.ulTokens[location], 
           tokenOrMarkup.markUp
         );
-        for (let indent = (tokenOrMarkup.indentationLevel||0); indent--; )
-          this.spanMarkup(this.ulTokens[location], indentMarkup);
+        if ((tokenOrMarkup.indentationLevel||0) > 0)
+          for (let indent = (tokenOrMarkup.indentationLevel); indent--; )
+            this.spanMarkup(this.ulTokens[location], indentMarkup);
       // Render other markup, like cursor placeholders...
       } else {
         this.spanMarkup(
