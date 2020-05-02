@@ -72,6 +72,7 @@ export class GameView
               index--;
               break;
             case 'conveyor':
+              handler(targ.id,1,this.codeCursorTokenIndex);
               return; // we're done, get out
           }
 
