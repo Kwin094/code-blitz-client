@@ -1,5 +1,5 @@
 import { GameToken, locations } from '../models/client.game.model';
-import { GameService, HandleMoveToken } from '../services/game.service';
+import { GameService, HandleMoveToken, HandleSubmitCode } from '../services/game.service';
 import { GameView } from '../views/game.view';
 
 /**
@@ -22,6 +22,8 @@ export class GameController {
     private gameView: GameView
     ) {
     // TODO: Study: Are constructor parameters added to 'this' class instance?
+    this.gameView.bindSubmitCode(this.handleSubmitCode);
+
     locations.forEach((location)=>{
       this.gameService.bindTokenLocationChanged(location,
         (tokens: GameToken[]) => {
@@ -38,5 +40,12 @@ export class GameController {
 
   handleMoveToken : HandleMoveToken = (tokenID,direction,codeCursorTokenIndex:number) => {
     this.gameService.moveToken(tokenID,direction,codeCursorTokenIndex);
+  }
+
+  handleSubmitCode = (title: string, code: string) => {
+    this.gameService.checkCode(title, code.replace(/\|/g,''))
+    .then(res => {
+      this.gameView.submitResult(res['result']);
+    });
   }
 }

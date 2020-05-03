@@ -34,13 +34,9 @@ export const html =
         <div class='opponentCode'>
         </div>
 
-        <button id="myBtn"><div class='submitButton'><div class='submit'>SUBMIT CODE</div>
+        <button id="submit"><div class='submitButton'><div class='submit'>SUBMIT CODE</div>
         </div></button>
         <div id="myModal" class="modal">
-          <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>YOU WIN!</p>
-          </div>
         </div>
 
         <div class='flex6'>

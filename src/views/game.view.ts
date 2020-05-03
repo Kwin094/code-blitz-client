@@ -28,6 +28,8 @@ export class GameView
 
   private formattedCodeTokens : TokenOrMarkup[];
 
+  private timer;
+
   constructor() {
     this.app = document.getElementById('root');
 
@@ -43,7 +45,34 @@ export class GameView
     })
 
     // Initialize timer and popup code
-    this.initializePopup(this.initializeTimer());
+    this.timer = this.initializeTimer();
+    this.initializePopup();
+  }
+
+  public bindSubmitCode(handler: Function) {
+    var btn = document.getElementById("submit")
+    btn.onclick = function() {
+      const code = document.getElementById('code').textContent;
+      const title = "Print Numbers";
+      //Hard coded for now. Will need to be changed later with more game options
+      handler(title, code);
+    };
+  }
+
+  public submitResult(result: boolean) {
+    var modal = document.getElementById("myModal");
+
+    if(result)
+    {
+      modal.innerHTML = '<div class="modal-content"><span class="close">&times;</span><p>YOU WIN!</p></div>';
+      modal.style.display = "block";
+      clearInterval(this.timer);
+    }
+    else
+    {
+      modal.innerHTML = '<div class="modal-content"><span class="close">&times;</span><p>Incorrect Answer, Keep Trying!</p></div>';
+      modal.style.display = "block";
+    }
   }
 
   // Primarily calls service handler() to move tokens between
@@ -208,21 +237,15 @@ export class GameView
     el.appendChild(li);
   }
 
-  private initializePopup(intervalID) 
+  private initializePopup() 
   {
     var modal = document.getElementById("myModal");
 
     // Get the button that opens the modal
-    var btn = document.getElementById("myBtn");
+    var btn = document.getElementById("submit");
 
     // Get the <span> element that closes the modal
     var span : HTMLSpanElement = document.getElementsByClassName("close") as any;
-
-    // When the user clicks the button, open the modal 
-    btn.onclick = function() {
-      modal.style.display = "block";
-      clearInterval(intervalID);
-    }
 
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
@@ -234,7 +257,7 @@ export class GameView
       if (event.target == modal) {
         modal.style.display = "none";
       }
-    } 
+    }
   }
 
   private initializeTimer()
@@ -275,5 +298,4 @@ export class GameView
         }
         return window.setInterval(stopWatch, 1000);    
   }
-
 }
