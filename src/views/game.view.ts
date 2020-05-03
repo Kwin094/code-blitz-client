@@ -5,6 +5,7 @@ import {
   TokenOrMarkup,
   codeTokensFormatter
 } from './game.view.format.logic';
+import { Exercise } from '../models/exercise.model';
 
 export const newlineMarkup = '<br/>';
 export const cursorPlaceholderMarkup = '|';
@@ -121,7 +122,18 @@ export class GameView
   }
 
   //
-  // Display() gets called whenver our model changes...
+  // One-time callback from service to inject our exercise model 
+  // data onto our game play page!
+  //
+  public initialize(exercise : Exercise)
+  {
+    const divPrompt = document.getElementById('prompt');
+    divPrompt.innerText = exercise.prompt;
+    // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
+  }
+
+  //
+  // Display() gets called whenever our model changes...
   //
   public display(location : Location, tokens : GameToken[]) 
   {
@@ -316,8 +328,8 @@ class AnimateConveyor
     private ulConveyor:HTMLUListElement, 
     private ticksPerRotation?:number
   ) {
-    console.log(this.ulConveyor);
-    console.log(this.ticksPerRotation);
+//    console.log(this.ulConveyor);
+//    console.log(this.ticksPerRotation);
     this.conveyorTimer = setInterval(
       this.rotateTokens.bind(this), 100);
   }
@@ -329,8 +341,8 @@ class AnimateConveyor
 
   private rotateTokens()
   {     
-    console.log(this.tick);
-    console.log(this.ticksPerRotation);
+//    console.log(this.tick);
+//    console.log(this.ticksPerRotation);
 
     if ( this.ulConveyor?.children?.length > 1
       && this.ticksPerRotation > 0 // use 0 to pause!

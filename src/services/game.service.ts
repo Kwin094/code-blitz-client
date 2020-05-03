@@ -23,6 +23,8 @@ export class GameService {
     [location:string/*Location*/] : TokenID[]
   } = {};
 
+  private onExerciseLoaded : (exercise: Exercise) => (void);
+
   private onTokenLocationChanged : {
     [location:string/*Location*/] : OnTokenArrayChanged
   } = {};
@@ -36,17 +38,23 @@ export class GameService {
     Fetch('/exercise') 
       .then(res => res && res.json())
       // quick adjustment to fetch tokens from first exercise...
-      .then(res => res[0]) 
+      .then(res => res) 
       .then( this.loadExercise.bind(this) );
   }
 
-  private loadExercise(exercise:Exercise)
+  private loadExercise(exercises:Exercise[])
   {
-    const exerciseTokens:Array<ExerciseToken> = exercise.tokens;
+    //
+    // TODO:
+    // Introduce exercise-picking algorithm here (could be random to start)...
+    // Right now, I'm just hard coding to the first exercise in Mongo collection!
+    //
+    this.exercise = exercises[0];
+    const exerciseTokens:Array<ExerciseToken> = this.exercise.tokens;
 
-//console.log(`Exercise = ${JSON.stringify(exercise)}`)
-    this.exercise = exercise;
-    console.log(`Prompt = ${exercise.prompt}`)
+    // One-time load/refresh of view now that we've got the 
+    // selected exercise data...
+    this.onExerciseLoaded(this.exercise);
 
     // Load all game tokens to
     // the central game token storage object
@@ -62,6 +70,12 @@ export class GameService {
     );
     this.refreshLocationArrays(null);
     this.commit(locations);
+  }
+
+  public bindExerciseLoaded(
+    callback: (exercise: Exercise) => (void)
+  ) {
+    this.onExerciseLoaded = callback;
   }
 
   public bindTokenLocationChanged(

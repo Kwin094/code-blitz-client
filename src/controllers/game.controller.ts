@@ -24,6 +24,10 @@ export class GameController {
     // TODO: Study: Are constructor parameters added to 'this' class instance?
     this.gameView.bindSubmitCode(this.handleSubmitCode);
 
+    this.gameService.bindExerciseLoaded((exercise)=>{
+      this.gameView.initialize(exercise);
+    });
+
     locations.forEach((location)=>{
       this.gameService.bindTokenLocationChanged(location,
         (tokens: GameToken[]) => {
