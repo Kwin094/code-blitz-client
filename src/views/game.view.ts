@@ -15,6 +15,8 @@ export class GameView
 {
   private app: HTMLElement;
   private dynamicStyles : HTMLStyleElement;
+  private divCodeEditor : HTMLDivElement;
+  private divOpponentEditor: HTMLDivElement;
   private animateConveyor : AnimateConveyor;
 
   private ulTokens : {
@@ -33,8 +35,18 @@ export class GameView
     this.app = document.getElementById('root');
 
     this.app.innerHTML = html; 
+
     this.dynamicStyles = 
       document.getElementById('dynamic-styles') as HTMLStyleElement;
+    this.divCodeEditor = 
+      document.getElementById('code-editor') as HTMLDivElement;
+    this.divOpponentEditor = 
+      document.getElementById('opponent-editor') as HTMLDivElement;
+
+    console.log(this.dynamicStyles.innerText)
+    console.log(this.divCodeEditor.innerHTML)
+    console.log(this.divOpponentEditor.innerHTML = 'CONNECTING . . . ')
+
 
     locations.forEach((location)=>{
       this.ulTokens[location] 
@@ -284,14 +296,14 @@ export class GameView
         let displayMinutes : string;
         
         //Stopwatch function (logic to determine when to increment next value, etc.)
-        function stopWatch(){
+        const stopWatch = () =>
+        {
             seconds++;
             //Logic to determine when to increment next value
             if(seconds / 60 === 1){
                 seconds = 0;
                  minutes++;
             }
-
             // If seconds/minutes/hours are only one digit, 
             // add a leading 0 to the value
             if(seconds < 10)
@@ -307,6 +319,10 @@ export class GameView
             //Display updated time values to user
             document.getElementById("timer").innerHTML 
               = displayMinutes + ":" + displaySeconds;
+
+          // HACK to simulate opponent code window updates
+          this.divOpponentEditor.innerHTML = this.divCodeEditor.innerHTML;
+
         }
         return window.setInterval(stopWatch, 1000);    
   }

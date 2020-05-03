@@ -63,7 +63,7 @@ export class GameService {
       (result,exerciseToken,index) => {
         result[exerciseToken.id] 
           = { ...exerciseToken, 
-              location: 'code' // 'conveyor'
+              location: 'conveyor'
             }
         return result;
       }, {} as GameTokens
