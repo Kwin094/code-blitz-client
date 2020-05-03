@@ -45,7 +45,7 @@ export class GameView
 
     // Animate conveyor
     this.animateConveyor = new AnimateConveyor(this.ulTokens['conveyor'],10);
-    this.animateConveyor.setDelayIn10thSeconds(5);
+//    this.animateConveyor.setDelayIn10thSeconds(0); 
   }
 
   // Primarily calls service handler() to move tokens between
@@ -312,11 +312,12 @@ class AnimateConveyor
     console.log(this.ticksPerRotation);
 
     if ( this.ulConveyor?.children?.length > 1
+      && this.ticksPerRotation > 0 // use 0 to pause!
       && (this.tick++ % this.ticksPerRotation) === 0 ) 
     {
-      const firstLI = this.ulConveyor.children[0];
-      this.ulConveyor.removeChild(firstLI);
-      this.ulConveyor.appendChild(firstLI);
+      const LI = this.ulConveyor.children[this.ulConveyor.children.length-1];
+      this.ulConveyor.removeChild(LI);
+      this.ulConveyor.insertBefore(LI,this.ulConveyor.children[0]);
     } 
   }
 }
