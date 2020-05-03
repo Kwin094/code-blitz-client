@@ -32,7 +32,7 @@ export class GameService {
       this.tokenLocationArray[location] = []; // initialize arrays
     });
     // Read exercise data from server and load it
-    Fetch('/token')
+    Fetch('/exercise') 
       .then(res => res && res.json())
       // quick adjustment to fetch tokens from first exercise...
       .then(res => res[0].tokens) 

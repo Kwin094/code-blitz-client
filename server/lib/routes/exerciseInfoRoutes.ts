@@ -16,14 +16,5 @@ export class ExerciseInfoRoutes {
             next(); // seems to be required          
         }, this.exerciseInfoController.getExerciseInfo)
         .post(this.exerciseInfoController.compareAnswer);
-
-        app.route('/token')
-        .get((req: Request, res: Response, next: NextFunction) => {
-            // middleware
-            console.log(`Request from: ${req.originalUrl}`);
-            console.log(`Request type: ${req.method}`);            
-            next();
-        }, this.exerciseInfoController.getExerciseInfo) 
-
     }
 }

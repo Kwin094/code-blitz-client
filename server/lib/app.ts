@@ -1,6 +1,5 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import { ExerciseTokenRoutes } from "./routes/exerciseTokenRoutes";
 import { ExerciseInfoRoutes } from "./routes/exerciseInfoRoutes";
 import { UserInfoRoutes } from "./routes/userInfoRoutes";
 import * as mongoose from "mongoose";
@@ -11,7 +10,6 @@ dotenv.config();
 class App { 
 
     public app: express.Application = express();
-    private exerciseTokenRoutes = new ExerciseTokenRoutes();
     private exerciseInfoRoutes = new ExerciseInfoRoutes();
     private userInfoRoutes = new UserInfoRoutes();
     private mongoUrl = process.env.mongodb_url;
@@ -20,7 +18,6 @@ class App {
         this.config();
         this.mongoSetup();
         this.exerciseInfoRoutes.routes(this.app);
-        this.exerciseTokenRoutes.routes(this.app);
         this.userInfoRoutes.routes(this.app);
     }
 
