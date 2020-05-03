@@ -19,7 +19,7 @@ export class ExerciseTokenController{
         });
     }
 */
-    public getExerciseTokens (req: Request, res: Response) {           
+    public getExerciseTokens (req: Request, res: Response) {      
         ExerciseToken.find({}, (err, contact) => {
             if(err){
                 res.send(err);
