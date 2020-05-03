@@ -18,6 +18,7 @@ type OnTokenArrayChanged = (x : GameToken[]) => (void);
  */
 export class GameService {
   private tokens : GameTokens = {};
+  private exercise : Exercise;
   private tokenLocationArray : {
     [location:string/*Location*/] : TokenID[]
   } = {};
@@ -35,12 +36,18 @@ export class GameService {
     Fetch('/exercise') 
       .then(res => res && res.json())
       // quick adjustment to fetch tokens from first exercise...
-      .then(res => res[0].tokens) 
+      .then(res => res[0]) 
       .then( this.loadExercise.bind(this) );
   }
 
-  private loadExercise(exerciseTokens:Array<ExerciseToken>)
+  private loadExercise(exercise:Exercise)
   {
+    const exerciseTokens:Array<ExerciseToken> = exercise.tokens;
+
+//console.log(`Exercise = ${JSON.stringify(exercise)}`)
+    this.exercise = exercise;
+    console.log(`Prompt = ${exercise.prompt}`)
+
     // Load all game tokens to
     // the central game token storage object
     // with a location setting of conveyor...
