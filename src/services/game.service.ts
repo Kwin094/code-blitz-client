@@ -33,6 +33,8 @@ export class GameService {
     // Read exercise data from server and load it
     Fetch('/token')
       .then(res => res && res.json())
+      // quick adjustment to fetch tokens from first exercise...
+      .then(res => res[0].tokens) 
       .then( this.loadExercise.bind(this) );
   }
 

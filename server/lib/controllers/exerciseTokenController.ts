@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 
 mongoose.pluralize(null);
 
-const ExerciseToken = mongoose.model('Sort', ExerciseTokenSchema);
+const ExerciseToken = mongoose.model('ExerciseInfo', ExerciseTokenSchema);
 
 export class ExerciseTokenController{ 
 /*

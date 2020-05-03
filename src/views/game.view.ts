@@ -316,7 +316,16 @@ class AnimateConveyor
       && (this.tick++ % this.ticksPerRotation) === 0 ) 
     {
       const LI = this.ulConveyor.children[this.ulConveyor.children.length-1];
+      const liWidth = LI.clientWidth;
+      
       this.ulConveyor.removeChild(LI);
+      /*
+      // concept for a smooth transition of movement in the conveyor:
+      // in CSS we need a selector for the 1st item in the conveyor, e.g.
+      // ul.conveyor li:first -tran: {
+        width: 0px -> 85px;
+      }
+      */
       this.ulConveyor.insertBefore(LI,this.ulConveyor.children[0]);
     } 
   }

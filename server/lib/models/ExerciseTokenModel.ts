@@ -3,6 +3,9 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 export const ExerciseTokenSchema = new Schema({
+    title: String,
+    prompt: String,
+    tokens: [{
     id: {
         type: String,
         required: 'Enter a token id'
@@ -19,5 +22,5 @@ export const ExerciseTokenSchema = new Schema({
         type: Number,
         required: 'Enter a token cost (numeric)'         
     }
-});
+}]});
 
