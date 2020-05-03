@@ -15,7 +15,7 @@ export class ExerciseTokenRoutes {
         })
         
         // Contact 
-        app.route('/token')
+        app.route('/tokenDEPRECATED')
         .get((req: Request, res: Response, next: NextFunction) => {
             // middleware
             console.log(`Request from: ${req.originalUrl}`);

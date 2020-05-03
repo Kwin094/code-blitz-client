@@ -1,10 +1,10 @@
 import * as mongoose from 'mongoose';
-import { ExerciseTokenSchema } from '../models/ExerciseTokenModel';
+import { ExerciseInfoSchema } from '../models/ExerciseInfoModel';
 import { Request, Response } from 'express';
 
 mongoose.pluralize(null);
 
-const ExerciseToken = mongoose.model('ExerciseInfo', ExerciseTokenSchema);
+const ExerciseToken = mongoose.model('ExerciseTokenInfo', ExerciseInfoSchema);
 
 export class ExerciseTokenController{ 
 /*

@@ -7,6 +7,7 @@ import { TokenID, ExerciseToken, Exercise } from '../models/exercise.model';
 type Direction = 1 | -1;
 
 export type HandleMoveToken = typeof GameService.prototype.moveToken;
+export type HandleSubmitCode = typeof GameService.prototype.checkCode;
 
 type OnTokenArrayChanged = (x : GameToken[]) => (void);
 
@@ -47,7 +48,7 @@ export class GameService {
       (result,exerciseToken,index) => {
         result[exerciseToken.id] 
           = { ...exerciseToken, 
-              location: 'conveyor'
+              location: 'code' // 'conveyor'
             }
         return result;
       }, {} as GameTokens
@@ -131,5 +132,19 @@ export class GameService {
         this.tokenLocationArray[location].map(tokenID=>this.tokens[tokenID])
       );
     });
+  }
+
+  public checkCode(title: string, code: string)
+  { 
+      /*Code used for testing, left in temporarily if you needed something to verify with as well
+        var Prologue = "var start = 9; var end = 15; var output = [];";
+        var Epilogue = "console.log(output);";
+        var middle = "while (start <= end) {output.push(start); start++;}";
+        code = Prologue + middle + Epilogue;*/
+    return Fetch('/exercise', {
+      method: 'POST',
+      body: JSON.stringify({_title: title, _code: code})
+  })
+  .then(res => res && res.json());
   }
 }
