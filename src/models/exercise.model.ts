@@ -17,7 +17,7 @@ export interface Exercise {
     availableBudget : number; // $
     highBudget : number;
     lowBudget : number;
-    tokens : Token[];
+    tokens : ExerciseToken[];
 }
 
 // Alias defined to help document code

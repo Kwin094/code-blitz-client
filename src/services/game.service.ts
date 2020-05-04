@@ -18,9 +18,12 @@ type OnTokenArrayChanged = (x : GameToken[]) => (void);
  */
 export class GameService {
   private tokens : GameTokens = {};
+  private exercise : Exercise;
   private tokenLocationArray : {
     [location:string/*Location*/] : TokenID[]
   } = {};
+
+  private onExerciseLoaded : (exercise: Exercise) => (void);
 
   private onTokenLocationChanged : {
     [location:string/*Location*/] : OnTokenArrayChanged
@@ -32,69 +35,27 @@ export class GameService {
       this.tokenLocationArray[location] = []; // initialize arrays
     });
     // Read exercise data from server and load it
-    Fetch('/token')
+    Fetch('/exercise') 
       .then(res => res && res.json())
-
-      .then(res => {
-        return Promise.resolve(
-      [
-        {"_id":"5e86247d2d041148f0fd8d8a","id":"001","token":"for","type":"keyword","cost":0.15},
-        {"_id":"5e86247d2d041148f0fd8d8b","id":"002","token":"(","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d8c","id":"003","token":"x","type":"identifier","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d8d","id":"004","token":"=","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d8e","id":"005","token":"1","type":"literal","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d8f","id":"006","token":";","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d90","id":"007","token":"x","type":"identifier","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d91","id":"008","token":"<=","type":"operator","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d92","id":"009","token":"10","type":"literal","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d93","id":"010","token":";","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d94","id":"011","token":"x","type":"identifier","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d95","id":"012","token":"++","type":"operator","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d96","id":"013","token":")","type":"symbol","cost":0.05},
-
-        {"_id":"5e86247d2d041148f0fd8d96","id":"022","token":"{","type":"symbol","cost":0.05},
-
-        {"_id":"5e86247d2d041148f0fd8d97","id":"014","token":"console","type":"keyword","cost":0.15},
-        {"_id":"5e86247d2d041148f0fd8d98","id":"015","token":".","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d99","id":"017","token":"log","type":"keyword","cost":0.15},
-        {"_id":"5e86247d2d041148f0fd8d9a","id":"018","token":"(","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d9b","id":"019","token":"x","type":"identifier","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d9c","id":"020","token":")","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d9d","id":"021","token":";","type":"symbol","cost":0.05},
-
-        {"_id":"5e86247d2d041148f0fd8d9d","id":"028","token":"for","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d9d","id":"029","token":"(","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d8c","id":"030","token":"y","type":"identifier","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d8d","id":"031","token":"=","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d8e","id":"032","token":"1","type":"literal","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d8f","id":"033","token":";","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d90","id":"034","token":"y","type":"identifier","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d91","id":"035","token":"<=","type":"operator","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d92","id":"036","token":"10","type":"literal","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d93","id":"037","token":";","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d94","id":"048","token":"y","type":"identifier","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d95","id":"039","token":"++","type":"operator","cost":0.1},
-        {"_id":"5e86247d2d041148f0fd8d9d","id":"040","token":")","type":"symbol","cost":0.05},
-
-
-        {"_id":"5e86247d2d041148f0fd8d96","id":"050","token":"{","type":"symbol","cost":0.05},
-
-        {"_id":"5e86247d2d041148f0fd8d9d","id":"051","token":"debugger","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d9d","id":"052","token":";","type":"symbol","cost":0.05},
-
-        {"_id":"5e86247d2d041148f0fd8d96","id":"060","token":"}","type":"symbol","cost":0.05},
-        {"_id":"5e86247d2d041148f0fd8d96","id":"070","token":"}","type":"symbol","cost":0.05},
-        
-      ] )
-
-    })
-
-
+      // quick adjustment to fetch tokens from first exercise...
+      .then(res => res) 
       .then( this.loadExercise.bind(this) );
   }
 
-  private loadExercise(exerciseTokens:Array<ExerciseToken>)
+  private loadExercise(exercises:Exercise[])
   {
+    //
+    // TODO:
+    // Introduce exercise-picking algorithm here (could be random to start)...
+    // Right now, I'm just hard coding to the first exercise in Mongo collection!
+    //
+    this.exercise = exercises[0];
+    const exerciseTokens:Array<ExerciseToken> = this.exercise.tokens;
+
+    // One-time load/refresh of view now that we've got the 
+    // selected exercise data...
+    this.onExerciseLoaded(this.exercise);
+
     // Load all game tokens to
     // the central game token storage object
     // with a location setting of conveyor...
@@ -109,6 +70,12 @@ export class GameService {
     );
     this.refreshLocationArrays(null);
     this.commit(locations);
+  }
+
+  public bindExerciseLoaded(
+    callback: (exercise: Exercise) => (void)
+  ) {
+    this.onExerciseLoaded = callback;
   }
 
   public bindTokenLocationChanged(

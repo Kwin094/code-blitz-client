@@ -5,9 +5,7 @@ import {
   TokenOrMarkup,
   codeTokensFormatter
 } from './game.view.format.logic';
-import { Ellipse } from 'pixi.js';
-import { setMaxListeners } from 'cluster';
-import { setInterval } from 'timers';
+import { Exercise } from '../models/exercise.model';
 
 export const newlineMarkup = '<br/>';
 export const cursorPlaceholderMarkup = '|';
@@ -17,6 +15,7 @@ export class GameView
 {
   private app: HTMLElement;
   private dynamicStyles : HTMLStyleElement;
+  private animateConveyor : AnimateConveyor;
 
   private ulTokens : {
     [location:string/*Location*/] : HTMLUListElement
@@ -44,7 +43,9 @@ export class GameView
         ) as HTMLUListElement;
     })
 
-    // Initialize timer and popup code
+    // Animate conveyor
+    this.animateConveyor = new AnimateConveyor(this.ulTokens['conveyor'],10);
+//    this.animateConveyor.setDelayIn10thSeconds(0); 
     this.timer = this.initializeTimer();
     this.initializePopup();
   }
@@ -121,7 +122,18 @@ export class GameView
   }
 
   //
-  // Display() gets called whenver our model changes...
+  // One-time callback from service to inject our exercise model 
+  // data onto our game play page!
+  //
+  public initialize(exercise : Exercise)
+  {
+    const divPrompt = document.getElementById('prompt');
+    divPrompt.innerText = exercise.prompt;
+    // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
+  }
+
+  //
+  // Display() gets called whenever our model changes...
   //
   public display(location : Location, tokens : GameToken[]) 
   {
@@ -299,3 +311,56 @@ export class GameView
         return window.setInterval(stopWatch, 1000);    
   }
 }
+
+class AnimateConveyor
+{
+  // TODO:
+  // This could be animate for smooth motion,
+  // there are many tutorials, e.g. 
+  //   https://www.sarasoueidan.com/blog/creative-list-effects/
+  //
+
+  private conveyorTimer = null;
+
+  private tick = 0; // 10 = 1 second
+
+  constructor(
+    private ulConveyor:HTMLUListElement, 
+    private ticksPerRotation?:number
+  ) {
+//    console.log(this.ulConveyor);
+//    console.log(this.ticksPerRotation);
+    this.conveyorTimer = setInterval(
+      this.rotateTokens.bind(this), 100);
+  }
+
+  public setDelayIn10thSeconds(ticksPerRotation)
+  {
+    this.ticksPerRotation = ticksPerRotation;
+  }
+
+  private rotateTokens()
+  {     
+//    console.log(this.tick);
+//    console.log(this.ticksPerRotation);
+
+    if ( this.ulConveyor?.children?.length > 1
+      && this.ticksPerRotation > 0 // use 0 to pause!
+      && (this.tick++ % this.ticksPerRotation) === 0 ) 
+    {
+      const LI = this.ulConveyor.children[this.ulConveyor.children.length-1];
+      const liWidth = LI.clientWidth;
+      
+      this.ulConveyor.removeChild(LI);
+      /*
+      // concept for a smooth transition of movement in the conveyor:
+      // in CSS we need a selector for the 1st item in the conveyor, e.g.
+      // ul.conveyor li:first -tran: {
+        width: 0px -> 85px;
+      }
+      */
+      this.ulConveyor.insertBefore(LI,this.ulConveyor.children[0]);
+    } 
+  }
+}
+
