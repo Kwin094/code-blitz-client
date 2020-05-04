@@ -44,7 +44,7 @@ export const html =
           <div id='stats'><b>OPPONENT STATS</b><br><BR>BALANCE: $4.78<br>TOKENS PLACED: 12<BR>LINES OF CODE: 3<BR>AVG COST PER LINE: $0.72<br>SUBMIT ATTEMPTS: 1</div>
           </div>
         </div>
-        <div id='opponent-editor' class='opponent-editor'>
+        <div id='opponent-editor' class='code-editor'>
         </div>
 
         <div id="submit"><div class='submitButton'><div class='submit'>SUBMIT CODE</div>
