@@ -213,36 +213,27 @@ div.conveyor-container {
   overflow-x:hidden;
   margin-left:10px;
   margin-right:10px;
+  font-weight: bold;
 }
 
 div.conveyor-container ul {
   display: flex;
-    border: 1px 1px black;
+  border: 1px 1px black;
 }
 
 div.conveyor-container li {
+  height: 50px;
+  vertical-align: middle;
+  margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
   background-color:gold;
   background-image: linear-gradient(yellow, #f5c71a);
   box-shadow: 1px 1px #996515;  
-  
 }
 div.conveyor-container li:hover{
   background-image: linear-gradient(#dbd400, #858000);
   box-shadow: 1px 1px #bdb600;    
-}
-
-/*CONVEYOR BELT SPEED*/
-div.flex11{
-  display: flex;
-  flex-direction:column;
-  width:100px;
-  padding-top: 15px;
-  margin-left: 10px;
-  margin-right: 10px;
-  color: black;
-  font-size:22px;
 }
 
 /*FLEX2*/
@@ -360,6 +351,7 @@ div.token-container {
   margin-right: 10px;
   margin-bottom: 10px;
   background-color: #D2ECD2;
+  font-weight: bold;
 }
 
 div.token-container ul {
@@ -371,6 +363,7 @@ div.token-container li {
   background-color:gold;
   background-image: linear-gradient(yellow, #f5c71a);
   box-shadow: 1px 1px #996515;
+  height: 50px;
 }
 
 /*FLEX4*/
@@ -380,14 +373,37 @@ div.flex4{
   display: flex;
   flex-direction:column;
 }
+
+/*CONVEYOR BELT SPEED*/
+div.flex11{
+  display: flex;
+  flex-direction:ROW;
+}
+
+div.conveyorSpeed{
+  text-align: center;
+  color: #f5c71a;
+  font-size:40px;
+  height:55px;
+  width:100%;
+  padding-top: 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+div.conveyorSpeed:hover{
+  color: white;
+}
+
 /*OPPONENT STATS*/
 div.stats-container{
-  height:30%;
+  height:25%;
   margin-top:15px;  
   margin-left:0px;
   margin-right:10px;
+  padding-top: 0px;
+  padding-bottom: 10px;
   color:white;
-
   display:flex;
 }
 
@@ -406,7 +422,7 @@ div.flex9{
 }
 
 /*OPPONENT CODE*/
-div.opponentCode{
+div.opponent-editor{
   height:70%;
   background-color:black;
   margin-left:0px;

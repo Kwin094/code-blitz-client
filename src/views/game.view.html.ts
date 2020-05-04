@@ -16,11 +16,6 @@ export const html =
       <div class='conveyor-container'>
         <ul id='conveyor' />
       </div>
-      <div class='flex11'>
-        <div class='conveyorSpeed' id='speedPlus'><i class="fa fa-plus-circle"></i></div>
-        <div class='conveyorSpeed' id='speedMinus'><i class="fa fa-minus-circle"></i></div>
-        <div class='conveyorSpeed' id='speedPause'><i class="fa fa-pause-circle"></i></div>
-      </div>
     </div>
     <div class='flex2'>
       <div class='flex3'>
@@ -36,15 +31,20 @@ export const html =
         </div> 
       </div>
       <div class='flex4'>
+        <div class='flex11'>
+          <div class='conveyorSpeed' id='speedPause'><i class="fa fa-pause-circle"></i></div>
+          <div class='conveyorSpeed' id='speedPlus'><i class="fa fa-plus-circle"></i></div>
+          <div class='conveyorSpeed' id='speedMinus'><i class="fa fa-minus-circle"></i></div>
+        </div>
         <div class="stats-container">
           <div class='flex9'>
-          <div id='stats'><b>MY STATS</b><br><BR>CREDIT: $5.12<br>TOKENS PLACED: 9<BR>LINES OF CODE: 2<BR>AVG COST PER LINE: $0.85<br>SUBMIT ATTEMPTS: 0</div>
+          <div id='stats'><b>MY STATS</b><br><BR>BALANCE: $5.12<br>TOKENS PLACED: 9<BR>LINES OF CODE: 2<BR>AVG COST PER LINE: $0.85<br>SUBMIT ATTEMPTS: 0</div>
           </div>
           <div class='flex9'>
           <div id='stats'><b>OPPONENT STATS</b><br><BR>BALANCE: $4.78<br>TOKENS PLACED: 12<BR>LINES OF CODE: 3<BR>AVG COST PER LINE: $0.72<br>SUBMIT ATTEMPTS: 1</div>
           </div>
         </div>
-        <div id='opponent-editor' class='code-editor'>
+        <div id='opponent-editor' class='opponent-editor'>
         </div>
 
         <div id="submit"><div class='submitButton'><div class='submit'>SUBMIT CODE</div>
