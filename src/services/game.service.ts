@@ -19,6 +19,7 @@ type OnTokenArrayChanged = (x : GameToken[]) => (void);
 export class GameService {
   private tokens : GameTokens = {};
   private exercise : Exercise;
+  private budget = 0;
   private tokenLocationArray : {
     [location:string/*Location*/] : TokenID[]
   } = {};
@@ -51,7 +52,8 @@ export class GameService {
     //
     this.exercise = exercises[0];
     const exerciseTokens:Array<ExerciseToken> = this.exercise.tokens;
-
+    
+    this.budget = this.exercise.availableBudget;
     // One-time load/refresh of view now that we've got the 
     // selected exercise data...
     this.onExerciseLoaded(this.exercise);
@@ -63,7 +65,7 @@ export class GameService {
       (result,exerciseToken,index) => {
         result[exerciseToken.id] 
           = { ...exerciseToken, 
-              location: 'code' // 'conveyor'
+              location: 'conveyor'
             }
         return result;
       }, {} as GameTokens
@@ -145,6 +147,16 @@ export class GameService {
       this.commit([oldLocation,newLocation]); 
 //    } ...
     return;
+  }
+
+  public changeBudget(tokenID : TokenID)
+  {
+    const location = this.tokens[tokenID].location;
+    if(location == 'conveyor' && this.budget > 0)
+    {
+      this.budget -= this.tokens[tokenID].cost;
+    }
+    return this.budget
   }
 
   private commit(locations : Location[]) {

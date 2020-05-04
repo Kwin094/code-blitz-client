@@ -46,9 +46,7 @@ export const html =
             </div>
           </div>
           <div class='flex8'>
-            <div id='label2'>Budget</div>                            
-            <div class='credit'><br><br>CREDIT<br>$ 5.12
-            </div>
+            <div id='budget'>Budget</div>
           </div>
         </div>
       </div>

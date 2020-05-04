@@ -39,6 +39,9 @@ export const ExerciseInfoSchema = new Schema({
     level: {
         type: Number,
     },
+    availableBudget: {
+        type: Number,
+    },
     highBudget: {
         type: Number,
     },
