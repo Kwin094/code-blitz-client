@@ -62,7 +62,29 @@ export class GameView
     this.timer = this.initializeTimer();
     this.initializePopup();
   }
-
+/*
+  public speed(result: number) {
+    var plus = document.getElementById("speedPlus");
+    var minus = document.getElementById("speedMinus");
+    var pause = document.getElementById("speedPause");
+    var speed = 10;
+    if(plus)
+    {
+      if(speed >= 5)
+      speed = speed - 3;
+    }
+    else if(minus)
+    {
+      if(speed <= 47){
+        speed = speed + 3;
+      }
+    }
+    else if(pause){
+      speed = 0;
+    }
+    this.animateConveyor.setDelayIn10thSeconds(0);
+  }
+*/
   public bindSubmitCode(handler: Function) {
     var btn = document.getElementById("submit")
     btn.onclick = function() {
@@ -134,6 +156,14 @@ export class GameView
     });
   }
 
+  public setBudget(budget: number)
+  {
+    var lbl = document.getElementById('budget');
+
+    lbl.style.background = 'green';
+    lbl.innerHTML = '<div class="credit"><br><br>CREDIT<br>$ ' + budget.toFixed(2) + '</div>';
+  }
+
   //
   // One-time callback from service to inject our exercise model 
   // data onto our game play page!
@@ -142,7 +172,13 @@ export class GameView
   {
     const divPrompt = document.getElementById('prompt');
     divPrompt.innerText = exercise.prompt;
-    console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
+    const divPrologue = document.getElementById('prologue');
+    divPrologue.innerText = exercise.solutions[0].prologue;
+    const divEpilogue = document.getElementById('epilogue');
+    divEpilogue.innerText = exercise.solutions[0].epilogue;
+    console.log(exercise.solutions[0].epilogue);
+    this.setBudget(exercise.availableBudget);
+    // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
   }
 
   //

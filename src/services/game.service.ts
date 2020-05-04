@@ -19,6 +19,7 @@ type OnTokenArrayChanged = (x : GameToken[]) => (void);
 export class GameService {
   private tokens : GameTokens = {};
   private exercise : Exercise;
+  private budget = 0;
   private tokenLocationArray : {
     [location:string/*Location*/] : TokenID[]
   } = {};
@@ -51,7 +52,8 @@ export class GameService {
     //
     this.exercise = exercises[0];
     const exerciseTokens:Array<ExerciseToken> = this.exercise.tokens;
-
+    
+    this.budget = this.exercise.availableBudget;
     // One-time load/refresh of view now that we've got the 
     // selected exercise data...
     this.onExerciseLoaded(this.exercise);
@@ -147,6 +149,16 @@ export class GameService {
     return;
   }
 
+  public changeBudget(tokenID : TokenID)
+  {
+    const location = this.tokens[tokenID].location;
+    if(location == 'conveyor' && this.budget > 0)
+    {
+      this.budget -= this.tokens[tokenID].cost;
+    }
+    return this.budget
+  }
+
   private commit(locations : Location[]) {
     locations.forEach((location : Location) => {
       this.onTokenLocationChanged[location](
@@ -162,7 +174,16 @@ export class GameService {
         var Epilogue = "console.log(output);";
         var middle = "while (start <= end) {output.push(start); start++;}";
         code = Prologue + middle + Epilogue;*/
-    return Fetch('/exercise', {
+
+    //
+    // *** FYI: No need to send 'code' parameter from view
+    // *** as our model data, managed by this service, is the 
+    // *** "source of truth" for the current set of tokens
+    // *** in the code 'location.'
+    console.log(this.tokenLocationArray['code']
+      .reduce( (prev, tokenID) => prev += this.tokens[tokenID].token +' ',''));
+        
+    return Fetch('/exercise', { 
       method: 'POST',
       body: JSON.stringify({_title: title, _code: code})
   })

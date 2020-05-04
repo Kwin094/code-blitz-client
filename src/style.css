@@ -201,13 +201,16 @@ div.flex5{
   box-shadow: 1.5px 1.5px #51CA51;  
 }
 
-
+/*FLEX10*/
+div.flex10{
+  display:flex;
+}
 
 /*CONVEYOR BELT*/
 div.conveyor-container {
   height:85px;
   border-bottom: 2px solid black; 
-  overflow-x: scroll;
+  overflow-x:hidden;
   margin-left:10px;
   margin-right:10px;
 }
@@ -215,7 +218,6 @@ div.conveyor-container {
 div.conveyor-container ul {
   display: flex;
     border: 1px 1px black;
-
 }
 
 div.conveyor-container li {
@@ -229,6 +231,18 @@ div.conveyor-container li {
 div.conveyor-container li:hover{
   background-image: linear-gradient(#dbd400, #858000);
   box-shadow: 1px 1px #bdb600;    
+}
+
+/*CONVEYOR BELT SPEED*/
+div.flex11{
+  display: flex;
+  flex-direction:column;
+  width:100px;
+  padding-top: 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: black;
+  font-size:22px;
 }
 
 /*FLEX2*/
@@ -248,13 +262,25 @@ div.flex3{
   flex-direction:column;
 }
 
+/*PROLOGUE*/
+div.prologue{
+  background-color: black;
+  padding-left:10px;
+  padding-right:10px;
+  padding-top:10px;
+  margin-top:15px;
+  margin-left:10px;
+  margin-right:10px;
+  line-height: 28px;
+  color: yellow;
+}
+
 /*CODE EDITOR*/
 div.code-editor{ 
   flex-grow:8; 
   background-color: black;
   padding-left:10px;
   padding-right:10px;
-  margin-top:15px;
   margin-left:10px;
   margin-right:10px;
   line-height: 28px;
@@ -300,6 +326,18 @@ div.code-editor span.cursor {
   color: transparent
 }
 
+/*EPILOGUE*/
+div.epilogue{
+  background-color: black;
+  padding-left:10px;
+  padding-right:10px;
+  padding-bottom:10px;
+  margin-left:10px;
+  margin-right:10px;
+  line-height: 28px;
+  color: yellow;
+}
+
 /*TOKEN BANK*/
 #label{
   margin-top:10px;
@@ -314,6 +352,7 @@ div.code-editor span.cursor {
 }
 
 div.token-container {
+  display:block;
   height:175px;
   border: 1px solid black; 
   overflow-y: scroll;
@@ -324,9 +363,10 @@ div.token-container {
 }
 
 div.token-container ul {
-  display: flex;
+  display: inline-block;
 }
 div.token-container li {
+  display:inline-block;
   margin: 5px;
   background-color:gold;
   background-image: linear-gradient(yellow, #f5c71a);
@@ -376,7 +416,7 @@ div.opponentCode{
 /*SUBMIT BUTTON*/
 div.submitButton{
   margin-left:0px;
-  margin-right:10px;
+  margin-right:10px;  
 }
 
 div.submit{
