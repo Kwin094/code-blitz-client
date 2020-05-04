@@ -56,34 +56,42 @@ export class GameView
     })
 
     // Animate conveyor
-    this.animateConveyor = new AnimateConveyor(this.ulTokens['conveyor'],10);
-//    this.animateConveyor.setDelayIn10thSeconds(0); 
+    this.animateConveyor = new AnimateConveyor(this.ulTokens['conveyor'], 0);
+    this.bindSpeedVCRbuttons(); 
+    
     this.timer = this.initializeTimer();
     this.initializePopup();
   }
-/*
-  public speed(result: number) {
-    var plus = document.getElementById("speedPlus");
-    var minus = document.getElementById("speedMinus");
-    var pause = document.getElementById("speedPause");
-    var speed = 10;
-    if(plus)
-    {
-      if(speed >= 5)
-      speed = speed - 3;
-    }
-    else if(minus)
-    {
-      if(speed <= 47){
-        speed = speed + 3;
+
+  private bindSpeedVCRbuttons() 
+  {
+    var currentSpeed = 10;
+    var pauseFlag = false;
+
+    const changeSpeed = (speedChange:number) => {
+      if (pauseFlag) {
+        pauseFlag = false;
       }
-    }
-    else if(pause){
-      speed = 0;
-    }
-    this.animateConveyor.setDelayIn10thSeconds(0);
+      else {
+        pauseFlag = (speedChange===0);
+        if (pauseFlag) {
+          this.animateConveyor.setDelayIn10thSeconds(0);
+          return;
+        }
+        else if(currentSpeed-speedChange > 0) {
+          currentSpeed = currentSpeed - speedChange; 
+          console.log(currentSpeed)
+        }
+      }
+      this.animateConveyor.setDelayIn10thSeconds(currentSpeed);
+    };
+
+    this.animateConveyor.setDelayIn10thSeconds(currentSpeed);
+    document.getElementById("speedPlus").onclick = ()=>changeSpeed(3);
+    document.getElementById("speedMinus").onclick = ()=>changeSpeed(-3);
+    document.getElementById("speedPause").onclick = ()=>changeSpeed(0);
   }
-*/
+
   public bindSubmitCode(handler: Function) {
     var btn = document.getElementById("submit")
     btn.onclick = function() {
