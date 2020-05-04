@@ -6,6 +6,7 @@ import {
   codeTokensFormatter
 } from './game.view.format.logic';
 import { Exercise } from '../models/exercise.model';
+import { Fetch } from '../utils/Fetch';
 
 export const newlineMarkup = '<br/>';
 export const cursorPlaceholderMarkup = '|';
@@ -141,7 +142,7 @@ export class GameView
   {
     const divPrompt = document.getElementById('prompt');
     divPrompt.innerText = exercise.prompt;
-    // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
+    console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
   }
 
   //
@@ -322,6 +323,13 @@ export class GameView
 
           // HACK to simulate opponent code window updates
           this.divOpponentEditor.innerHTML = this.divCodeEditor.innerHTML;
+
+
+          return Fetch('/game', {
+            method: 'POST',
+            body: JSON.stringify({dummy:"just some test data"})
+        })
+        .then( res => res && res.json() );
 
         }
         return window.setInterval(stopWatch, 1000);    

@@ -1,8 +1,16 @@
+interface Games {
+    session_id:string,
+    challenge_id:string,
+    tokens_placed:number
+}
+
 export class Singleton
 {
     private static instance: Singleton;
 
     public challengers = {};
+
+    public games : Games[] = [];
 
     private constructor(){}
 
