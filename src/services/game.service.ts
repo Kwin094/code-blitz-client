@@ -174,7 +174,16 @@ export class GameService {
         var Epilogue = "console.log(output);";
         var middle = "while (start <= end) {output.push(start); start++;}";
         code = Prologue + middle + Epilogue;*/
-    return Fetch('/exercise', {
+
+    //
+    // *** FYI: No need to send 'code' parameter from view
+    // *** as our model data, managed by this service, is the 
+    // *** "source of truth" for the current set of tokens
+    // *** in the code 'location.'
+    console.log(this.tokenLocationArray['code']
+      .reduce( (prev, tokenID) => prev += this.tokens[tokenID].token +' ',''));
+        
+    return Fetch('/exercise', { 
       method: 'POST',
       body: JSON.stringify({_title: title, _code: code})
   })
