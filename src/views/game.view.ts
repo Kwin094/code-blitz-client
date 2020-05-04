@@ -61,7 +61,29 @@ export class GameView
     this.timer = this.initializeTimer();
     this.initializePopup();
   }
-
+/*
+  public speed(result: number) {
+    var plus = document.getElementById("speedPlus");
+    var minus = document.getElementById("speedMinus");
+    var pause = document.getElementById("speedPause");
+    var speed = 10;
+    if(plus)
+    {
+      if(speed >= 5)
+      speed = speed - 3;
+    }
+    else if(minus)
+    {
+      if(speed <= 47){
+        speed = speed + 3;
+      }
+    }
+    else if(pause){
+      speed = 0;
+    }
+    this.animateConveyor.setDelayIn10thSeconds(0);
+  }
+*/
   public bindSubmitCode(handler: Function) {
     var btn = document.getElementById("submit")
     btn.onclick = function() {
