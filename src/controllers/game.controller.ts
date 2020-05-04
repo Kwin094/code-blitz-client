@@ -43,6 +43,8 @@ export class GameController {
   }
 
   handleMoveToken : HandleMoveToken = (tokenID,direction,codeCursorTokenIndex:number) => {
+    let budget = this.gameService.changeBudget(tokenID);
+    this.gameView.setBudget(budget);
     this.gameService.moveToken(tokenID,direction,codeCursorTokenIndex);
   }
 

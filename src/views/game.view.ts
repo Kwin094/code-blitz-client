@@ -155,6 +155,14 @@ export class GameView
     });
   }
 
+  public setBudget(budget: number)
+  {
+    var lbl = document.getElementById('budget');
+
+    lbl.style.background = 'green';
+    lbl.innerHTML = '<div class="credit"><br><br>CREDIT<br>$ ' + budget.toFixed(2) + '</div>';
+  }
+
   //
   // One-time callback from service to inject our exercise model 
   // data onto our game play page!
@@ -168,6 +176,7 @@ export class GameView
     const divEpilogue = document.getElementById('epilogue');
     divEpilogue.innerText = exercise.solutions[0].epilogue;
     console.log(exercise.solutions[0].epilogue);
+    this.setBudget(exercise.availableBudget);
     // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
   }
 
