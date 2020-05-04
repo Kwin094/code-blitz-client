@@ -141,6 +141,11 @@ export class GameView
   {
     const divPrompt = document.getElementById('prompt');
     divPrompt.innerText = exercise.prompt;
+    const divPrologue = document.getElementById('prologue');
+    divPrologue.innerText = exercise.solutions[0].prologue;
+    const divEpilogue = document.getElementById('epilogue');
+    divEpilogue.innerText = exercise.solutions[0].epilogue;
+    console.log(exercise.solutions[0].epilogue);
     // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
   }
 

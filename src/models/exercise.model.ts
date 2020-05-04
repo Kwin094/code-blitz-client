@@ -17,6 +17,10 @@ export interface Exercise {
     availableBudget : number; // $
     highBudget : number;
     lowBudget : number;
+    solutions : [{
+        prologue: string,
+        epilogue: string
+    }]
     tokens : ExerciseToken[];
 }
 
