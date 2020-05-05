@@ -7,6 +7,6 @@ export class GameController
 {
   public updateGameStatus (req: Request, res: Response)
   {
-    res.json({stuff:1, moreStuff: "more", reflection: req.body });
+    res.json( req.body ); // just reflect stats for now for testing...
   }
 }

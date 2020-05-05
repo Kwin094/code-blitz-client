@@ -1,4 +1,4 @@
-interface Games {
+interface GameplayStats {
     session_id:string,
     challenge_id:string,
     tokens_placed:number
@@ -10,7 +10,7 @@ export class Singleton
 
     public challengers = {};
 
-    public games : Games[] = [];
+    public games : GameplayStats[] = [];
 
     private constructor(){}
 

@@ -1,15 +1,15 @@
-import { GameToken, GameTokens, Location, locations } 
+import { GameToken, GameTokens, Location, locations, GameplayStats }
   from '../models/client.game.model';
 import { Fetch } from '../utils/Fetch';
-// import { sampleGameTokens } from '../models/client.game.mock';
-import { TokenID, ExerciseToken, Exercise } from '../models/exercise.model';
+import { TokenID, ExerciseToken, Exercise } 
+  from '../models/exercise.model';
 
 type Direction = 1 | -1;
 
 export type HandleMoveToken = typeof GameService.prototype.moveToken;
 export type HandleSubmitCode = typeof GameService.prototype.checkCode;
 
-type OnTokenArrayChanged = (x : GameToken[]) => (void);
+type OnTokenArrayChanged = (x : GameToken[]) => (string);
 
 /**
  * @class Service
@@ -19,13 +19,15 @@ type OnTokenArrayChanged = (x : GameToken[]) => (void);
 export class GameService {
   private tokens : GameTokens = {};
   private exercise : Exercise;
-  private budget = 0;
+  private myStats = { budget: 0 } as GameplayStats;
+  private opponentStats = {} as GameplayStats;
   private tokenLocationArray : {
     [location:string/*Location*/] : TokenID[]
   } = {};
 
   private onExerciseLoaded : (exercise: Exercise) => (void);
-
+  private onRefreshGameplayStats 
+    : (myStats: GameplayStats, opponentStats: GameplayStats) => (void);
   private onTokenLocationChanged : {
     [location:string/*Location*/] : OnTokenArrayChanged
   } = {};
@@ -53,7 +55,7 @@ export class GameService {
     this.exercise = exercises[0];
     const exerciseTokens:Array<ExerciseToken> = this.exercise.tokens;
     
-    this.budget = this.exercise.availableBudget;
+    this.myStats.budget = this.exercise.availableBudget;
     // One-time load/refresh of view now that we've got the 
     // selected exercise data...
     this.onExerciseLoaded(this.exercise);
@@ -78,6 +80,12 @@ export class GameService {
     callback: (exercise: Exercise) => (void)
   ) {
     this.onExerciseLoaded = callback;
+  }
+
+  public bindRefreshGameplayStats(
+    callback: (myStats: GameplayStats, opponentStats: GameplayStats) => (void)
+  ) {
+    this.onRefreshGameplayStats = callback;
   }
 
   public bindTokenLocationChanged(
@@ -152,19 +160,47 @@ export class GameService {
   public changeBudget(tokenID : TokenID)
   {
     const location = this.tokens[tokenID].location;
-    if(location == 'conveyor' && this.budget > 0)
+    if(location == 'conveyor' && this.myStats.budget > 0)
     {
-      this.budget -= this.tokens[tokenID].cost;
+      this.myStats.budget -= this.tokens[tokenID].cost;
     }
-    return this.budget
+    return this.myStats.budget
   }
 
-  private commit(locations : Location[]) {
+  private commit(locations : Location[]) 
+  {
     locations.forEach((location : Location) => {
-      this.onTokenLocationChanged[location](
+      const strHtml = this.onTokenLocationChanged[location](
         this.tokenLocationArray[location].map(tokenID=>this.tokens[tokenID])
       );
+      if (location==='code') {
+        this.myStats.code_html = strHtml;
+        // TODO: Following is not 100% accurate yet!!!
+        this.myStats.lines_of_code = strHtml.match(/[<]br[>]/g).length - 1;
+        this.myStats.tokens_placed = this.tokenLocationArray['code'].length
+      }
     });
+
+    this.broadcastStats();
+
+    this.onRefreshGameplayStats(this.myStats, this.opponentStats);  
+  }
+
+  // TODO:
+  // Can be called on a timer to get opponent refreshes faster;
+  // otherwise we only see opponent updates when we update our 
+  // token placement...
+  public broadcastStats() 
+  {
+    Fetch('/game', {
+      method: 'POST',
+      body: JSON.stringify(this.myStats)
+    })
+    .then( res => res && res.json() )
+    .then( res => {
+      this.opponentStats = res;
+      this.onRefreshGameplayStats(this.myStats, this.opponentStats);  
+    });      
   }
 
   public checkCode(title: string, code: string)

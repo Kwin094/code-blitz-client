@@ -2,7 +2,6 @@ import { Challenge } from '../models/challenge.model';
 import { ChallengeService } from '../services/challenge.service';
 import { ChallengeView } from '../views/challenge.view';
 import { UserService } from '../services/user.service';
-import { UPDATE_PRIORITY } from 'pixi.js';
 
 /**
  * @class Controller
