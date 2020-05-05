@@ -25,7 +25,7 @@ export const html =
         </div>
         <div class='epilogue' id='epilogue'>Epilogue</div>
 
-        <div id='label'>Token Bank</div>
+        <div id='label'>TOKEN BANK</div>
         <div class='token-container'>
           <ul id='token_bank' />
         </div> 
@@ -54,7 +54,7 @@ export const html =
 
         <div class='flex6'>
           <div class='flex7'>
-            <div id='label'>Return Token</div>
+            <div id='label'>RETURN TOKEN</div>
             <div class='sellBack'>
             </div>
           </div>
