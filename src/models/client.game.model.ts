@@ -20,3 +20,14 @@ export interface GameTokens {
     [id:string/*TokenID*/] : GameToken;
 }
 
+//
+// Live Gameplay stats interface definition...
+export interface GameplayStats {
+    session_id: string,
+    challenge_id: string,
+    budget: number,
+    tokens_placed: number,
+    lines_of_code: number,
+    code_html: string
+}
+

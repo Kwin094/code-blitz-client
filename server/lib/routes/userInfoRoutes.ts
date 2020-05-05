@@ -6,14 +6,6 @@ export class UserInfoRoutes {
     public userInfoController = new UserInfoController();
     
     public routes(app): void {   
-        
-        app.route('/')
-        .get((req: Request, res: Response) => {            
-            res.status(200).send({
-                message: 'GET request successfulll!!!!'
-            })
-        })
-        
         // Users 
         app.route('/user')
         .get((req: Request, res: Response, next: NextFunction) => {

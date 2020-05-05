@@ -1,5 +1,6 @@
 import { html } from './game.view.html';
-import { GameToken, Location, locations } from '../models/client.game.model';
+import { GameToken, Location, locations, GameplayStats } 
+  from '../models/client.game.model';
 import { HandleMoveToken } from '../services/game.service';
 import { 
   TokenOrMarkup,
@@ -15,6 +16,8 @@ export class GameView
 {
   private app: HTMLElement;
   private dynamicStyles : HTMLStyleElement;
+  private divCodeEditor : HTMLDivElement;
+  private divOpponentEditor: HTMLDivElement;
   private animateConveyor : AnimateConveyor;
 
   private ulTokens : {
@@ -33,8 +36,18 @@ export class GameView
     this.app = document.getElementById('root');
 
     this.app.innerHTML = html; 
+
     this.dynamicStyles = 
       document.getElementById('dynamic-styles') as HTMLStyleElement;
+    this.divCodeEditor = 
+      document.getElementById('code-editor') as HTMLDivElement;
+    this.divOpponentEditor = 
+      document.getElementById('opponent-editor') as HTMLDivElement;
+
+    console.log(this.dynamicStyles.innerText)
+    console.log(this.divCodeEditor.innerHTML)
+    console.log(this.divOpponentEditor.innerHTML = 'CONNECTING . . . ')
+
 
     locations.forEach((location)=>{
       this.ulTokens[location] 
@@ -44,10 +57,40 @@ export class GameView
     })
 
     // Animate conveyor
-    this.animateConveyor = new AnimateConveyor(this.ulTokens['conveyor'],10);
-//    this.animateConveyor.setDelayIn10thSeconds(0); 
+    this.animateConveyor = new AnimateConveyor(this.ulTokens['conveyor'], 0);
+    this.bindSpeedVCRbuttons(); 
+    
     this.timer = this.initializeTimer();
     this.initializePopup();
+  }
+
+  private bindSpeedVCRbuttons() 
+  {
+    var currentSpeed = 10;
+    var pauseFlag = false;
+
+    const changeSpeed = (speedChange:number) => {
+      if (pauseFlag) {
+        pauseFlag = false;
+      }
+      else {
+        pauseFlag = (speedChange===0);
+        if (pauseFlag) {
+          this.animateConveyor.setDelayIn10thSeconds(0);
+          return;
+        }
+        else if(currentSpeed-speedChange > 0) {
+          currentSpeed = currentSpeed - speedChange; 
+          console.log(currentSpeed)
+        }
+      }
+      this.animateConveyor.setDelayIn10thSeconds(currentSpeed);
+    };
+
+    this.animateConveyor.setDelayIn10thSeconds(currentSpeed);
+    document.getElementById("speedPlus").onclick = ()=>changeSpeed(3);
+    document.getElementById("speedMinus").onclick = ()=>changeSpeed(-3);
+    document.getElementById("speedPause").onclick = ()=>changeSpeed(0);
   }
 
   public bindSubmitCode(handler: Function) {
@@ -121,6 +164,14 @@ export class GameView
     });
   }
 
+  public setBudget(budget: number)
+  {
+    var lbl = document.getElementById('budget');
+
+    lbl.style.background = 'green';
+    lbl.innerHTML = '<div class="credit"><br><br>CREDIT<br>$ ' + budget.toFixed(2) + '</div>';
+  }
+
   //
   // One-time callback from service to inject our exercise model 
   // data onto our game play page!
@@ -129,11 +180,39 @@ export class GameView
   {
     const divPrompt = document.getElementById('prompt');
     divPrompt.innerText = exercise.prompt;
-    // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
+    const divPrologue = document.getElementById('prologue');
+    divPrologue.innerText = exercise.solutions[0].prologue;
+    const divEpilogue = document.getElementById('epilogue');
+    divEpilogue.innerText = exercise.solutions[0].epilogue;
+    console.log(exercise.solutions[0].epilogue);
+    this.setBudget(exercise.availableBudget);
+  }
+
+  public displayGameplayStats(myStats: GameplayStats, opponentStats: GameplayStats)
+  {
+    const divMyStats = document.getElementById('stats') as HTMLDivElement;
+    const divOpponentStats = document.getElementById('opponent-stats') as HTMLDivElement;
+    const myHTML = myStats.code_html;
+    this.divOpponentEditor.innerHTML = myHTML;    
+
+    this.renderStats(divMyStats,myStats);
+    this.renderStats(divOpponentStats,opponentStats);
+  }
+
+  private renderStats(div : HTMLDivElement, stats : GameplayStats)
+  {
+    div.innerHTML = `
+      <b>MY STATS</b><br/><br/>
+      BALANCE: ${stats.budget}<br/>
+      TOKENS PLACED: ${stats.tokens_placed}<br/>
+      LINES OF CODE: ${stats.lines_of_code}<br/>
+    `;
   }
 
   //
-  // Display() gets called whenever our model changes...
+  // display() gets called whenever our model changes...
+  // Method ALSO returns the latest code window HTML
+  // when the method is called with location parameter === 'code'
   //
   public display(location : Location, tokens : GameToken[]) 
   {
@@ -180,6 +259,8 @@ export class GameView
         );
       }
     });
+
+    return location!=='code' ? null : this.divCodeEditor.innerHTML;
   }
 
   public findFormattedIndexOfToken(tokenID:string)
@@ -284,14 +365,14 @@ export class GameView
         let displayMinutes : string;
         
         //Stopwatch function (logic to determine when to increment next value, etc.)
-        function stopWatch(){
+        const stopWatch = () =>
+        {
             seconds++;
             //Logic to determine when to increment next value
             if(seconds / 60 === 1){
                 seconds = 0;
                  minutes++;
             }
-
             // If seconds/minutes/hours are only one digit, 
             // add a leading 0 to the value
             if(seconds < 10)

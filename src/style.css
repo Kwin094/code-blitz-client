@@ -201,30 +201,35 @@ div.flex5{
   box-shadow: 1.5px 1.5px #51CA51;  
 }
 
-
+/*FLEX10*/
+div.flex10{
+  display:flex;
+}
 
 /*CONVEYOR BELT*/
 div.conveyor-container {
   height:85px;
   border-bottom: 2px solid black; 
-  overflow-x: scroll;
+  overflow-x:hidden;
   margin-left:10px;
   margin-right:10px;
+  font-weight: bold;
 }
 
 div.conveyor-container ul {
   display: flex;
-    border: 1px 1px black;
-
+  border: 1px 1px black;
 }
 
 div.conveyor-container li {
+  height: 50px;
+  vertical-align: middle;
+  margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
   background-color:gold;
   background-image: linear-gradient(yellow, #f5c71a);
   box-shadow: 1px 1px #996515;  
-  
 }
 div.conveyor-container li:hover{
   background-image: linear-gradient(#dbd400, #858000);
@@ -248,25 +253,47 @@ div.flex3{
   flex-direction:column;
 }
 
-/*CODE EDITOR*/
-div.code-editor{ 
-  flex-grow:8; 
+/*PROLOGUE*/
+div.prologue{
   background-color: black;
-  padding-left:10px;
+  padding-left:15px;
   padding-right:10px;
+  padding-top:10px;
   margin-top:15px;
   margin-left:10px;
   margin-right:10px;
   line-height: 28px;
+  color: yellow;
 }
 
-div.code-editor ul {
-  display: flex;
+/*CODE EDITOR*/
+div.code-editor{ 
+  flex-grow:8; 
+  color: white;
+  background-color: black;
+  padding-left:10px;
+  padding-right:10px;
+  margin-left:10px;
+  margin-right:10px;
+  line-height: 20px;
+}
+
+div#opponent-editor{
+  font-size: 75%;
+  font-weight: normal;
+  font-size: 14px;
+  height:50%;
+  overflow-y: scroll;
+  width: 100%;
+  padding-right:10px;
+}
+div#opponent-editor ul{
+  margin-right:10px;
 }
 
 div.code-editor li {
   display: inline;
-  padding: 2px;
+  padding: 0px;
   padding-top: 6px;
   padding-bottom: 6px;
   background-color: transparent;
@@ -276,20 +303,26 @@ div.code-editor li {
 }
 
 div.code-editor li:hover {
+  background-color: lightgray;
   border: solid lightgray 1px;
   cursor: pointer;
+  color: black;
 }
 
 div.code-editor span.cursor {
   border: solid lightgray 1px;
   border: solid transparent 1px;
+  padding: 0px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 div.code-editor span.cursor:hover {
-  color: red;
+  color: black;
   font-weight: bold;
   border-radius: 4px;  
-  border: solid lightgray 1px;
+  border: solid transparent 1px;
+  background-color: red;
   cursor: pointer;
 }
 
@@ -300,20 +333,34 @@ div.code-editor span.cursor {
   color: transparent
 }
 
+/*EPILOGUE*/
+div.epilogue{
+  background-color: black;
+  padding-left:15px;
+  padding-right:10px;
+  padding-bottom:10px;
+  margin-left:10px;
+  margin-right:10px;
+  line-height: 28px;
+  color: yellow;
+}
+
 /*TOKEN BANK*/
 #label{
   margin-top:10px;
   margin-left:10px;
   margin-right:10px;
-  color:#e5fafa;
+  color:white;
   padding-top:2px;
   padding-bottom:2px;
-  font-size:13px;
-  font-style: italic;
+  font-size:14px;
+  font-style: normal;
   text-align: center;
+  background-color: darkgreen;
 }
 
 div.token-container {
+  display:block;
   height:175px;
   border: 1px solid black; 
   overflow-y: scroll;
@@ -321,16 +368,19 @@ div.token-container {
   margin-right: 10px;
   margin-bottom: 10px;
   background-color: #D2ECD2;
+  font-weight: bold;
 }
 
 div.token-container ul {
-  display: flex;
+  display: inline-block;
 }
 div.token-container li {
+  display:inline-block;
   margin: 5px;
   background-color:gold;
   background-image: linear-gradient(yellow, #f5c71a);
   box-shadow: 1px 1px #996515;
+  height: 50px;
 }
 
 /*FLEX4*/
@@ -339,15 +389,40 @@ div.flex4{
   /*parent flex*/
   display: flex;
   flex-direction:column;
+  margin-right:10px;
+  
 }
+
+/*CONVEYOR BELT SPEED*/
+div.flex11{
+  display: flex;
+  flex-direction:ROW;
+}
+
+div.conveyorSpeed{
+  text-align: center;
+  color: #f5c71a;
+  font-size:40px;
+  height:55px;
+  width:100%;
+  padding-top: 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+div.conveyorSpeed:hover{
+  color: white;
+}
+
 /*OPPONENT STATS*/
 div.stats-container{
-  height:30%;
+  height:25%;
   margin-top:15px;  
   margin-left:0px;
-  margin-right:10px;
+  margin-right:0px;
+  padding-top: 0px;
+  padding-bottom: 10px;
   color:white;
-
   display:flex;
 }
 
@@ -356,7 +431,7 @@ div.flex9{
   background-color:darkgreen;
 }
 
-#stats{
+div.stats {
   margin:10px;
   letter-spacing: 1px;
   font-size: 10px;
@@ -365,18 +440,10 @@ div.flex9{
   
 }
 
-/*OPPONENT CODE*/
-div.opponentCode{
-  height:70%;
-  background-color:black;
-  margin-left:0px;
-  margin-right:10px;
-}
-
 /*SUBMIT BUTTON*/
 div.submitButton{
   margin-left:0px;
-  margin-right:10px;
+  margin-right:0px;  
 }
 
 div.submit{
