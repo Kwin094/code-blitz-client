@@ -256,7 +256,7 @@ div.flex3{
 /*PROLOGUE*/
 div.prologue{
   background-color: black;
-  padding-left:10px;
+  padding-left:15px;
   padding-right:10px;
   padding-top:10px;
   margin-top:15px;
@@ -269,12 +269,22 @@ div.prologue{
 /*CODE EDITOR*/
 div.code-editor{ 
   flex-grow:8; 
+  color: white;
   background-color: black;
   padding-left:10px;
   padding-right:10px;
   margin-left:10px;
   margin-right:10px;
-  line-height: 28px;
+  line-height: 20px;
+}
+
+div#opponent-editor{
+  font-size: 75%;
+  font-weight: normal;
+  font-size: 14px;
+  height:50%;
+  overflow-y: scroll;
+  width: 100%;
 }
 
 div.code-editor ul {
@@ -283,7 +293,7 @@ div.code-editor ul {
 
 div.code-editor li {
   display: inline;
-  padding: 2px;
+  padding: 0px;
   padding-top: 6px;
   padding-bottom: 6px;
   background-color: transparent;
@@ -293,20 +303,26 @@ div.code-editor li {
 }
 
 div.code-editor li:hover {
+  background-color: lightgray;
   border: solid lightgray 1px;
   cursor: pointer;
+  color: black;
 }
 
 div.code-editor span.cursor {
   border: solid lightgray 1px;
   border: solid transparent 1px;
+  padding: 0px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 div.code-editor span.cursor:hover {
-  color: red;
+  color: black;
   font-weight: bold;
   border-radius: 4px;  
-  border: solid lightgray 1px;
+  border: solid transparent 1px;
+  background-color: red;
   cursor: pointer;
 }
 
@@ -320,7 +336,7 @@ div.code-editor span.cursor {
 /*EPILOGUE*/
 div.epilogue{
   background-color: black;
-  padding-left:10px;
+  padding-left:15px;
   padding-right:10px;
   padding-bottom:10px;
   margin-left:10px;
