@@ -1,5 +1,6 @@
 import { html } from './game.view.html';
-import { GameToken, Location, locations } from '../models/client.game.model';
+import { GameToken, Location, locations, GameplayStats } 
+  from '../models/client.game.model';
 import { HandleMoveToken } from '../services/game.service';
 import { 
   TokenOrMarkup,
@@ -185,11 +186,33 @@ export class GameView
     divEpilogue.innerText = exercise.solutions[0].epilogue;
     console.log(exercise.solutions[0].epilogue);
     this.setBudget(exercise.availableBudget);
-    // console.log(`game.view.ts: initialize(): exercise = ${JSON.stringify(exercise)}`);
+  }
+
+  public displayGameplayStats(myStats: GameplayStats, opponentStats: GameplayStats)
+  {
+    const divMyStats = document.getElementById('stats') as HTMLDivElement;
+    const divOpponentStats = document.getElementById('opponent-stats') as HTMLDivElement;
+    const myHTML = myStats.code_html;
+    this.divOpponentEditor.innerHTML = myHTML;    
+
+    this.renderStats(divMyStats,myStats);
+    this.renderStats(divOpponentStats,opponentStats);
+  }
+
+  private renderStats(div : HTMLDivElement, stats : GameplayStats)
+  {
+    div.innerHTML = `
+      <b>MY STATS</b><br/><br/>
+      BALANCE: ${stats.budget}<br/>
+      TOKENS PLACED: ${stats.tokens_placed}<br/>
+      LINES OF CODE: ${stats.lines_of_code}<br/>
+    `;
   }
 
   //
-  // Display() gets called whenever our model changes...
+  // display() gets called whenever our model changes...
+  // Method ALSO returns the latest code window HTML
+  // when the method is called with location parameter === 'code'
   //
   public display(location : Location, tokens : GameToken[]) 
   {
@@ -236,6 +259,8 @@ export class GameView
         );
       }
     });
+
+    return location!=='code' ? null : this.divCodeEditor.innerHTML;
   }
 
   public findFormattedIndexOfToken(tokenID:string)
@@ -363,10 +388,6 @@ export class GameView
             //Display updated time values to user
             document.getElementById("timer").innerHTML 
               = displayMinutes + ":" + displaySeconds;
-
-          // HACK to simulate opponent code window updates
-          this.divOpponentEditor.innerHTML = this.divCodeEditor.innerHTML;
-
         }
         return window.setInterval(stopWatch, 1000);    
   }

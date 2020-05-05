@@ -431,7 +431,7 @@ div.flex9{
   background-color:darkgreen;
 }
 
-#stats{
+div.stats {
   margin:10px;
   letter-spacing: 1px;
   font-size: 10px;

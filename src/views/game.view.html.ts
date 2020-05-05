@@ -38,10 +38,10 @@ export const html =
         </div>
         <div class="stats-container">
           <div class='flex9'>
-          <div id='stats'><b>MY STATS</b><br><BR>BALANCE: $5.12<br>TOKENS PLACED: 9<BR>LINES OF CODE: 2<BR>AVG COST PER LINE: $0.85<br>SUBMIT ATTEMPTS: 0</div>
+          <div id='stats' class='stats'></div>
           </div>
           <div class='flex9'>
-          <div id='stats'><b>OPPONENT STATS</b><br><BR>BALANCE: $4.78<br>TOKENS PLACED: 12<BR>LINES OF CODE: 3<BR>AVG COST PER LINE: $0.72<br>SUBMIT ATTEMPTS: 1</div>
+          <div id='opponent-stats' class='stats'></div>
           </div>
         </div>
         <div id='opponent-editor' class='code-editor'>
